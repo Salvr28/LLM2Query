@@ -1,0 +1,5 @@
+secret.json
+/venv/
+/Dataset/
+/Datasets_documentations/
+/chroma_data/

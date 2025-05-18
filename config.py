@@ -6,6 +6,8 @@ import chromadb
 from chromadb.config import Settings
 import google.generativeai as genai
 
+MAX_RETRIES = 1
+
 # ------ Embedding Model and Devices -------
 # https://huggingface.co/thenlper/gte-large
 embedding_model = SentenceTransformer("thenlper/gte-large")
@@ -18,7 +20,7 @@ else:
     embedding_model.to(DEVICE)
 
 # ------ ChromaDB Config ------
-CHROMA_PATH = "chroma_data/" 
+CHROMA_PATH = "chroma_data/"
 chroma_client = chromadb.PersistentClient(CHROMA_PATH)
 
 # ------ Google Gemini API ------
@@ -35,7 +37,7 @@ try:
     genai.configure(api_key=GOOGLE_API_KEY)
     gemini_model = genai.GenerativeModel('gemini-2.0-flash')
 
-except FileNotFoundError: 
+except FileNotFoundError:
     print(f"[GOOGLE API Error]: File {SECRETS_FILE} not found")
 except json.JSONDecodeError:
     print(f"[GOOGLE API Error]: Wrong JSON format in {SECRETS_FILE}")

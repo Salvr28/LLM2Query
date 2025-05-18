@@ -1,90 +1,32 @@
-import tqdm
-from sentence_transformers import SentenceTransformer
+import streamlit as st
+import json
 import torch
-
-# https://huggingface.co/thenlper/gte-large
-embedding_model = SentenceTransformer("thenlper/gte-large")
-
-# Check if the model is on a meta device
-if next(embedding_model.parameters()).is_meta:
-    # Move to the desired device (e.g., 'cuda' for GPU, 'cpu' for CPU) using to_empty()
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    embedding_model.to_empty(device=device)
-else:
-    # If not on a meta device, you can use .to() as usual
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    embedding_model.to(device)
-
+from sentence_transformers import SentenceTransformer
 import chromadb
 from chromadb.config import Settings
-
-chroma_client = chromadb.PersistentClient(path="chroma_data/")
-chroma_collection = chroma_client.get_collection(name="datasets_documentations")
-
 import google.generativeai as genai
-import streamlit as st
+from query_generator import MongoDBQueryGenerator
+from query_executor import execute_mongodb_query
+import config
 
-import json
-
-with open("secret.json") as f:
-  secrets = json.load(f)
-
-try:
-    GOOGLE_API_KEY = secrets["GOOGLE_API_KEY"]
-    genai.configure(api_key=GOOGLE_API_KEY)
-except KeyError:
-    st.error("Google API Key not found in secrets.json. Please ensure it's there.")
+# ------ Critic Configuration ------
+if config.GOOGLE_API_KEY is None: 
+    st.error('GOOGLE API Key not configured correctly in config module')
+    st.stop()
+if config.DB_SCHEMA is None:
+    st.error('MongoDB Schema not loaded correctly from config module')
+    st.stop()
+if config.MONGO_URI is None:
+    st.error('MongoDB URI not configured correctly in config module')
     st.stop()
 
-st.set_page_config(page_title="MongoDB Query Generator", page_icon="🧠")
+# ------ Streamlit App Tools ------
+# Qui ci dovrebbero andare tutti i moduli che usa app:
+# - Query Generator
+# - Query Validator
+# - Query Executor
+query_generator = MongoDBQueryGenerator(config.embedding_model, config.gemini_model, config.chroma_client, config.DB_SCHEMA)
 
-SCHEMA_FILE_PATH = "mongodb_schema.txt"  # Assuming the file is in the same directory
-
-try:
-    with open(SCHEMA_FILE_PATH, 'r') as f:
-        DB_SCHEMA_STR = f.read()
-    DB_SCHEMA = json.loads(DB_SCHEMA_STR)
-except FileNotFoundError:
-    st.error(f"Error: Schema file not found at '{SCHEMA_FILE_PATH}'")
-    st.stop()
-except json.JSONDecodeError:
-    st.error(f"Error: Invalid JSON format in '{SCHEMA_FILE_PATH}'")
-    st.stop()
-
-
-model = genai.GenerativeModel('gemini-2.0-flash') # Load the model
-
-def retrieve_context(user_instruction: str, n_results: int = 3) -> str:
-    query_embedding = embedding_model.encode(user_instruction)
-    results = chroma_collection.query(query_embeddings=[query_embedding], n_results=n_results, include=["documents", "metadatas", "distances"])
-    documents = results["documents"][0]
-    return "\n---\n".join(documents)
-
-def generate_query(user_instruction: str) -> str:
-
-    context = retrieve_context(user_instruction)
-
-    prompt = f"""<s>
-    Task Description:
-    Your task is to create a MongoDB query that accurately fulfills the provided Instruct while strictly adhering to the given MongoDB schema.
-
-    MongoDB Schema:
-    {DB_SCHEMA}
-
-    Retrieved Context:
-    {context}
-
-    ### Instruct:
-    {user_instruction}
-
-    ### Output:
-    """
-
-    try:
-        response = model.generate_content(prompt)
-        return response.text.strip(), context
-    except Exception as e:
-        return f"Errore durante la generazione della query: {e}", context
 
 # ----Streamlit Interface------
 st.title("🧠 MongoDB Query Generator con Gemini Flash")
@@ -102,10 +44,66 @@ if prompt := st.chat_input("Chiedimi qualcosa..."):
 
     with st.chat_message("assistant"):
         with st.spinner("Sto generando la query con Gemini Flash..."):
-            response, context = generate_query(prompt)
-        st.markdown(f"```javascript\n{response}\n```")
+            generated_query, context = query_generator.generate_query(prompt)
 
+        # Rimuovi i delimitatori Markdown se presenti
+        if generated_query.startswith("```mongodb"):
+            generated_query = generated_query[len("```mongodb"):].strip()
+        if generated_query.endswith("```"):
+            generated_query = generated_query[:-len("```")].strip()
+
+        # Esegui la query MongoDB e mostra i risultati
+        query_error = False  # Inizializza una variabile per tracciare gli errori
+        with st.spinner("Eseguo la query su MongoDB..."):
+            try:
+                query_result = execute_mongodb_query(generated_query, config.MONGO_URI, config.MONGO_DB_NAME)
+                st.markdown("**📦 Risultato della Query:**")
+                st.json(query_result)
+            except Exception as e:
+                st.error(f"Errore durante l'esecuzione della query: {e}")
+                query_error = True  # Imposta la variabile di errore a True
+                st.session_state.last_error = str(e) # Salva l'errore nello stato
+
+        # Mostra la query generata solo su richiesta
+        with st.expander("🧾 **Mostra Query Generata**"):
+            st.markdown(f"```javascript\n{generated_query}\n```")
+
+        # Mostra il contesto RAG
         with st.expander("📚 **Mostra Contesto RAG**"):
             st.markdown(f"```\n{context}\n```")
 
-    st.session_state.messages.append({"role": "assistant", "content": f"```javascript\n{response}\n```\n\n<details><summary>📚 **Contesto RAG**</summary><pre>{context}</pre></details>"})
+        # Bottone per la modifica manuale della query in caso di errore
+        if query_error:
+            if st.button("✏️ Modifica ed Esegui la Query Manualmente", key="edit_query_button"):
+                st.session_state.manual_query_mode = True
+                st.session_state.manual_query = generated_query
+            else:
+                st.session_state.manual_query_mode = False
+                if "manual_query" in st.session_state:
+                    del st.session_state.manual_query
+
+        # Mostra l'input per la query manuale e il bottone di esecuzione
+        if "manual_query_mode" in st.session_state and st.session_state.manual_query_mode:
+            manual_query = st.text_area("Modifica la query MongoDB:", st.session_state.get("manual_query", ""), height=200)
+            if st.button("🚀 Esegui Query Modificata", key="execute_manual_query"):
+                with st.spinner("Eseguo la query modificata..."):
+                    try:
+                        manual_query_result = execute_mongodb_query(manual_query, config.MONGO_URI, config.MONGO_DB_NAME)
+                        st.markdown("**📦 Risultato della Query Modificata:**")
+                        st.json(manual_query_result)
+                        if "last_error" in st.session_state:
+                            del st.session_state.last_error # Cancella l'errore precedente
+                        st.session_state.manual_query_mode = False # Disabilita la modalità manuale dopo l'esecuzione
+                        if "manual_query" in st.session_state:
+                            del st.session_state.manual_query # Cancella la query manuale
+                    except Exception as e:
+                        st.error(f"Errore durante l'esecuzione della query modificata: {e}")
+                        st.session_state.last_error = str(e) # Aggiorna l'errore
+
+        # Appendi il messaggio dell'assistente (senza i dettagli degli expander)
+        assistant_content = "Ho provato a generare ed eseguire una query per te."
+        if query_error and "last_error" in st.session_state:
+            assistant_content += f"\n\nSi è verificato un errore: `{st.session_state.last_error}`. Puoi provare a modificarla manualmente."
+        elif not query_error:
+            assistant_content += "\n\nEcco i risultati (vedi sopra)."
+        st.session_state.messages.append({"role": "assistant", "content": assistant_content})

@@ -1,510 +1,1387 @@
 {
-  "collections": [
-    {
-      "name": "ANAGRAFICA",
-      "indexes": [
-        { "key": { "_id": 1 } },
-        { "key": { "CODICE_FISCALE": 1 } },
-        { "key": { "COMUNE_DI_NASCITA": 1 } },
-        { "key": { "DATADINASCITA": 1 } },
-        { "key": { "COGNOME": 1, "NOME_PAZ": 1 } }
-      ],
-      "uniqueIndexes": [],
-      "document": {
-        "properties": {
-          "_id": { "bsonType": "objectId" },
-          "SEZIONE": { "bsonType": "string" },
-          "CODPAZ": { "bsonType": "string" },
-          "COGNOME": { "bsonType": "string" },
-          "NOMEPAZ": { "bsonType": "string" },
-          "DATADINASCITA": { "bsonType": "string" },
-          "SESSO": { "bsonType": "string" },
-          "COMUNE_DI_NASCITA": { "bsonType": "string" },
-          "CODICE_COMUNE_DI_NASCITA": { "bsonType": "string" },
-          "CODICE_FISCALE": { "bsonType": "string" },
-          "GATE_DI_INGRESSO": { "bsonType": "string" },
-          "MOTIVO_DECESSO": { "bsonType": "string" },
-          "DATA_DECESSO": { "bsonType": "string" }
+    "collections": [
+        {
+            "name": "ANAGRAFICA",
+            "indexes": [
+                {
+                    "key": {
+                        "_id": 1
+                    }
+                },
+                {
+                    "key": {
+                        "CODICE_FISCALE": 1
+                    }
+                },
+                {
+                    "key": {
+                        "COMUNE_DI_NASCITA": 1
+                    }
+                },
+                {
+                    "key": {
+                        "DATADINASCITA": 1
+                    }
+                },
+                {
+                    "key": {
+                        "COGNOME": 1,
+                        "NOME_PAZ": 1
+                    }
+                }
+            ],
+            "uniqueIndexes": [],
+            "document": {
+                "properties": {
+                    "_id": {
+                        "bsonType": "objectId"
+                    },
+                    "SEZIONE": {
+                        "bsonType": "string"
+                    },
+                    "CODPAZ": {
+                        "bsonType": "string"
+                    },
+                    "COGNOME": {
+                        "bsonType": "string"
+                    },
+                    "NOMEPAZ": {
+                        "bsonType": "string"
+                    },
+                    "DATADINASCITA": {
+                        "bsonType": "string"
+                    },
+                    "SESSO": {
+                        "bsonType": "string"
+                    },
+                    "COMUNE_DI_NASCITA": {
+                        "bsonType": "string"
+                    },
+                    "CODICE_COMUNE_DI_NASCITA": {
+                        "bsonType": "string"
+                    },
+                    "CODICE_FISCALE": {
+                        "bsonType": "string"
+                    },
+                    "GATE_DI_INGRESSO": {
+                        "bsonType": "string"
+                    },
+                    "MOTIVO_DECESSO": {
+                        "bsonType": "string"
+                    },
+                    "DATA_DECESSO": {
+                        "bsonType": "string"
+                    }
+                }
+            }
+        },
+        {
+            "name": "ANAMNESI",
+            "indexes": [
+                {
+                    "key": {
+                        "_id": 1
+                    }
+                },
+                {
+                    "key": {
+                        "CODPAZ": 1
+                    }
+                },
+                {
+                    "key": {
+                        "DATA": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO_GLOBALE": 1
+                    }
+                }
+            ],
+            "uniqueIndexes": [],
+            "document": {
+                "properties": {
+                    "_id": {
+                        "bsonType": "objectId"
+                    },
+                    "SEZIONE": {
+                        "bsonType": "number"
+                    },
+                    "CODPAZ": {
+                        "bsonType": "number"
+                    },
+                    "DATA": {
+                        "bsonType": "date"
+                    },
+                    "NUM_PROGRESSIVO": {
+                        "bsonType": "number"
+                    },
+                    "DIABETE": {
+                        "bsonType": "string"
+                    },
+                    "DISLIPIDEMIA": {
+                        "bsonType": "string"
+                    },
+                    "DISLIPIDEMIA_IPERCOLESTEROLEMIA": {
+                        "bsonType": "string"
+                    },
+                    "DISLIPIDEMIA_IPERTRIGLICERIDEMIA": {
+                        "bsonType": "string"
+                    },
+                    "DISLIPIDEMIA_MISTA": {
+                        "bsonType": "string"
+                    },
+                    "FUMO": {
+                        "bsonType": "string"
+                    },
+                    "PREVIOUS_IMA": {
+                        "bsonType": "string"
+                    },
+                    "PREVIOUS_PCI": {
+                        "bsonType": "number"
+                    },
+                    "PREVIOUS_CABG": {
+                        "bsonType": "number"
+                    },
+                    "CAD": {
+                        "bsonType": "string"
+                    },
+                    "STROKE": {
+                        "bsonType": "string"
+                    },
+                    "CAD_FAMILIARITY_CEREBRAL": {
+                        "bsonType": "string"
+                    },
+                    "CAD_FAMILIARITY_CARDIAC": {
+                        "bsonType": "string"
+                    },
+                    "CAD_FAMILIARITY": {
+                        "bsonType": "string"
+                    },
+                    "NUM_PROGRESSIVO_GLOBALE": {
+                        "bsonType": "number"
+                    },
+                    "GATE_DI_INGRESSO": {
+                        "bsonType": "string"
+                    }
+                }
+            }
+        },
+        {
+            "name": "CORONAROGRAFIA_PTCA",
+            "indexes": [
+                {
+                    "key": {
+                        "_id": 1
+                    }
+                },
+                {
+                    "key": {
+                        "CODPAZ": 1
+                    }
+                },
+                {
+                    "key": {
+                        "DATA": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO_GLOBALE": 1
+                    }
+                }
+            ],
+            "uniqueIndexes": [],
+            "document": {
+                "properties": {
+                    "_id": {
+                        "bsonType": "objectId"
+                    },
+                    "SEZIONE": {
+                        "bsonType": "number"
+                    },
+                    "CODPAZ": {
+                        "bsonType": "number"
+                    },
+                    "DATA": {
+                        "bsonType": "date"
+                    },
+                    "NUM_PROGRESSIVO": {
+                        "bsonType": "number"
+                    },
+                    "LESIONI_TC": {
+                        "bsonType": "string"
+                    },
+                    "LESIONI_IVA": {
+                        "bsonType": "string"
+                    },
+                    "LESIONI_CX": {
+                        "bsonType": "string"
+                    },
+                    "LESIONI_DX": {
+                        "bsonType": "string"
+                    },
+                    "NUM_PROGRESSIVO_GLOBALE": {
+                        "bsonType": "number"
+                    },
+                    "GATE_DI_INGRESSO": {
+                        "bsonType": "string"
+                    }
+                }
+            }
+        },
+        {
+            "name": "ECOCARDIO_DATI",
+            "indexes": [
+                {
+                    "key": {
+                        "_id": 1
+                    }
+                },
+                {
+                    "key": {
+                        "CODPAZ": 1
+                    }
+                },
+                {
+                    "key": {
+                        "DATA": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO_GLOBALE": 1
+                    }
+                }
+            ],
+            "uniqueIndexes": [],
+            "document": {
+                "properties": {
+                    "_id": {
+                        "bsonType": "objectId"
+                    },
+                    "SEZIONE": {
+                        "bsonType": "number"
+                    },
+                    "CODPAZ": {
+                        "bsonType": "number"
+                    },
+                    "DATA": {
+                        "bsonType": "date"
+                    },
+                    "NUM_PROGRESSIVO": {
+                        "bsonType": "number"
+                    },
+                    "EF": {
+                        "bsonType": "number"
+                    },
+                    "AORTA_ASCENDENTE": {
+                        "bsonType": "number"
+                    },
+                    "AORTA_ADDOMINALE": {
+                        "bsonType": "number"
+                    },
+                    "PESO": {
+                        "bsonType": "number"
+                    },
+                    "ALTEZZA": {
+                        "bsonType": "number"
+                    },
+                    "PAS": {
+                        "bsonType": "number"
+                    },
+                    "PAD": {
+                        "bsonType": "number"
+                    },
+                    "RR": {
+                        "bsonType": "number"
+                    },
+                    "AORTA": {
+                        "bsonType": "number"
+                    },
+                    "VSTD": {
+                        "bsonType": "number"
+                    },
+                    "VSTS": {
+                        "bsonType": "number"
+                    },
+                    "SIVTD": {
+                        "bsonType": "number"
+                    },
+                    "PPTD": {
+                        "bsonType": "number"
+                    },
+                    "PFVE": {
+                        "bsonType": "number"
+                    },
+                    "PFVA": {
+                        "bsonType": "number"
+                    },
+                    "EA": {
+                        "bsonType": "number"
+                    },
+                    "DT": {
+                        "bsonType": "number"
+                    },
+                    "LVVS": {
+                        "bsonType": "number"
+                    },
+                    "LVVD": {
+                        "bsonType": "number"
+                    },
+                    "LVVD_2CH": {
+                        "bsonType": "number"
+                    },
+                    "LVVS_2CH": {
+                        "bsonType": "number"
+                    },
+                    "E_TDI_SETTALE": {
+                        "bsonType": "number"
+                    },
+                    "E_TDI": {
+                        "bsonType": "number"
+                    },
+                    "LAV": {
+                        "bsonType": "number"
+                    },
+                    "_2CH_LAV": {
+                        "bsonType": "number"
+                    },
+                    "JET_RIG_TRIC": {
+                        "bsonType": "number"
+                    },
+                    "TAPSE": {
+                        "bsonType": "number"
+                    },
+                    "ATRIO": {
+                        "bsonType": "string"
+                    },
+                    "BICUSPIDE": {
+                        "bsonType": "string"
+                    },
+                    "INSUFFICIENZA_AORTICA": {
+                        "bsonType": "string"
+                    },
+                    "INSUFFICIENZA_MITRALICA": {
+                        "bsonType": "string"
+                    },
+                    "INSUFFICIENZA_TRICUSPIDALICA": {
+                        "bsonType": "string"
+                    },
+                    "STENOSI_AORTICA": {
+                        "bsonType": "string"
+                    },
+                    "STENOSI_MITRALICA": {
+                        "bsonType": "string"
+                    },
+                    "TROMBO": {
+                        "bsonType": "string"
+                    },
+                    "HEART_FAILURE": {
+                        "bsonType": "string"
+                    },
+                    "AORTIC_DISEASE_ASCENDING_AORTIC_DILATION": {
+                        "bsonType": "string"
+                    },
+                    "AORTIC_DISEASE_ASCENDING_AORTIC_ANEURYSM": {
+                        "bsonType": "string"
+                    },
+                    "AORTIC_DISEASE_ABDOMINAL_AORTIC_ANEURYSM": {
+                        "bsonType": "string"
+                    },
+                    "NUM_PROGRESSIVO_GLOBALE": {
+                        "bsonType": "number"
+                    },
+                    "GATE_DI_INGRESSO": {
+                        "bsonType": "string"
+                    }
+                }
+            }
+        },
+        {
+            "name": "ECOCAROTIDI",
+            "indexes": [
+                {
+                    "key": {
+                        "_id": 1
+                    }
+                },
+                {
+                    "key": {
+                        "CODPAZ": 1
+                    }
+                },
+                {
+                    "key": {
+                        "DATA": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO_GLOBALE": 1
+                    }
+                }
+            ],
+            "uniqueIndexes": [],
+            "document": {
+                "properties": {
+                    "_id": {
+                        "bsonType": "objectId"
+                    },
+                    "SEZIONE": {
+                        "bsonType": "number"
+                    },
+                    "CODPAZ": {
+                        "bsonType": "number"
+                    },
+                    "DATA": {
+                        "bsonType": "date"
+                    },
+                    "NUM_PROGRESSIVO": {
+                        "bsonType": "number"
+                    },
+                    "C_COMUNE_DIAMETRO": {
+                        "bsonType": "number"
+                    },
+                    "IMTMAX": {
+                        "bsonType": "number"
+                    },
+                    "MAXIMTNEARCIDX": {
+                        "bsonType": "number"
+                    },
+                    "MAXIMTNEARCISX": {
+                        "bsonType": "number"
+                    },
+                    "MAXIMTFARCIDX": {
+                        "bsonType": "number"
+                    },
+                    "MAXIMTFARCISX": {
+                        "bsonType": "number"
+                    },
+                    "MAXIMTNEARBDX": {
+                        "bsonType": "number"
+                    },
+                    "MAXIMTNEARBSX": {
+                        "bsonType": "number"
+                    },
+                    "MAXIMTFARBDX": {
+                        "bsonType": "number"
+                    },
+                    "MAXIMTFARBSX": {
+                        "bsonType": "number"
+                    },
+                    "MAXIMTNEARCCDX": {
+                        "bsonType": "number"
+                    },
+                    "MAXIMTNEARCCSX": {
+                        "bsonType": "number"
+                    },
+                    "MAXIMTFARCCDX": {
+                        "bsonType": "number"
+                    },
+                    "MAXIMTFARCCSX": {
+                        "bsonType": "number"
+                    },
+                    "ESAME_NELLA_NORMA": {
+                        "bsonType": "string"
+                    },
+                    "ATEROSCLEROSI_LIEVE": {
+                        "bsonType": "string"
+                    },
+                    "ATEROSCLEROSI_MODERATA": {
+                        "bsonType": "string"
+                    },
+                    "ATEROSCLEROSI_SEVERA": {
+                        "bsonType": "string"
+                    },
+                    "NUM_PROGRESSIVO_GLOBALE": {
+                        "bsonType": "number"
+                    },
+                    "GATE_DI_INGRESSO": {
+                        "bsonType": "string"
+                    }
+                }
+            }
+        },
+        {
+            "name": "ESAMI_LABORATORIO",
+            "indexes": [
+                {
+                    "key": {
+                        "_id": 1
+                    }
+                },
+                {
+                    "key": {
+                        "CODPAZ": 1
+                    }
+                },
+                {
+                    "key": {
+                        "DATA": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO_GLOBALE": 1
+                    }
+                }
+            ],
+            "uniqueIndexes": [],
+            "document": {
+                "properties": {
+                    "_id": {
+                        "bsonType": "objectId"
+                    },
+                    "SEZIONE": {
+                        "bsonType": "number"
+                    },
+                    "CODPAZ": {
+                        "bsonType": "number"
+                    },
+                    "DATA": {
+                        "bsonType": "date"
+                    },
+                    "NUM_PROGRESSIVO": {
+                        "bsonType": "number"
+                    },
+                    "GLICEMIA": {
+                        "bsonType": "number"
+                    },
+                    "CREATININEMIA": {
+                        "bsonType": "number"
+                    },
+                    "EMOGLOBINA": {
+                        "bsonType": "number"
+                    },
+                    "URICEMIA": {
+                        "bsonType": "number"
+                    },
+                    "SODIEMIA": {
+                        "bsonType": "number"
+                    },
+                    "POTASSIEMIA": {
+                        "bsonType": "number"
+                    },
+                    "CALCEMIA": {
+                        "bsonType": "number"
+                    },
+                    "TRIGLICERIDI": {
+                        "bsonType": "number"
+                    },
+                    "COLESTEROLO": {
+                        "bsonType": "number"
+                    },
+                    "HDL": {
+                        "bsonType": "number"
+                    },
+                    "PCR": {
+                        "bsonType": "number"
+                    },
+                    "HBA1C_PERC": {
+                        "bsonType": "number"
+                    },
+                    "MALBUMINURIA": {
+                        "bsonType": "number"
+                    },
+                    "PROTEINURIA24": {
+                        "bsonType": "number"
+                    },
+                    "OMOCISTEINEMIA": {
+                        "bsonType": "number"
+                    },
+                    "PROTEINE_TOTALI": {
+                        "bsonType": "number"
+                    },
+                    "ALBUMINE": {
+                        "bsonType": "number"
+                    },
+                    "GOT": {
+                        "bsonType": "number"
+                    },
+                    "GPT": {
+                        "bsonType": "number"
+                    },
+                    "DIABETE": {
+                        "bsonType": "string"
+                    },
+                    "FILTRATO_GFR": {
+                        "bsonType": "number"
+                    },
+                    "CKD": {
+                        "bsonType": "string"
+                    },
+                    "CKD_STADIO": {
+                        "bsonType": "string"
+                    },
+                    "NUM_PROGRESSIVO_GLOBALE": {
+                        "bsonType": "number"
+                    },
+                    "GATE_DI_INGRESSO": {
+                        "bsonType": "string"
+                    }
+                }
+            }
+        },
+        {
+            "name": "ESAMI_SPECIALISTICI",
+            "indexes": [
+                {
+                    "key": {
+                        "_id": 1
+                    }
+                },
+                {
+                    "key": {
+                        "CODPAZ": 1
+                    }
+                },
+                {
+                    "key": {
+                        "DATA": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO_GLOBALE": 1
+                    }
+                }
+            ],
+            "uniqueIndexes": [],
+            "document": {
+                "properties": {
+                    "_id": {
+                        "bsonType": "objectId"
+                    },
+                    "SEZIONE": {
+                        "bsonType": "number"
+                    },
+                    "CODPAZ": {
+                        "bsonType": "number"
+                    },
+                    "DATA": {
+                        "bsonType": "date"
+                    },
+                    "NUM_PROGRESSIVO": {
+                        "bsonType": "number"
+                    },
+                    "FT3": {
+                        "bsonType": "number"
+                    },
+                    "FT4": {
+                        "bsonType": "number"
+                    },
+                    "TSH": {
+                        "bsonType": "number"
+                    },
+                    "NUM_PROGRESSIVO_GLOBALE": {
+                        "bsonType": "number"
+                    },
+                    "GATE_DI_INGRESSO": {
+                        "bsonType": "string"
+                    }
+                }
+            }
+        },
+        {
+            "name": "ESAMI_STRUMENTALI_CARDIO",
+            "indexes": [
+                {
+                    "key": {
+                        "_id": 1
+                    }
+                },
+                {
+                    "key": {
+                        "CODPAZ": 1
+                    }
+                },
+                {
+                    "key": {
+                        "DATA": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO_GLOBALE": 1
+                    }
+                }
+            ],
+            "uniqueIndexes": [],
+            "document": {
+                "properties": {
+                    "_id": {
+                        "bsonType": "objectId"
+                    },
+                    "SEZIONE": {
+                        "bsonType": "number"
+                    },
+                    "CODPAZ": {
+                        "bsonType": "number"
+                    },
+                    "DATA": {
+                        "bsonType": "date"
+                    },
+                    "NUM_PROGRESSIVO": {
+                        "bsonType": "number"
+                    },
+                    "CONCLUSIONI": {
+                        "bsonType": "string"
+                    },
+                    "NUM_PROGRESSIVO_GLOBALE": {
+                        "bsonType": "number"
+                    },
+                    "GATE_DI_INGRESSO": {
+                        "bsonType": "string"
+                    }
+                }
+            }
+        },
+        {
+            "name": "LISTA_EVENTI",
+            "indexes": [
+                {
+                    "key": {
+                        "_id": 1
+                    }
+                },
+                {
+                    "key": {
+                        "CODPAZ": 1
+                    }
+                },
+                {
+                    "key": {
+                        "DATA": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO_GLOBALE": 1
+                    }
+                }
+            ],
+            "uniqueIndexes": [],
+            "document": {
+                "properties": {
+                    "_id": {
+                        "bsonType": "objectId"
+                    },
+                    "SEZIONE": {
+                        "bsonType": "number"
+                    },
+                    "CODPAZ": {
+                        "bsonType": "number"
+                    },
+                    "DATA": {
+                        "bsonType": "date"
+                    },
+                    "NUM_PROGRESSIVO": {
+                        "bsonType": "number"
+                    },
+                    "TIPO_EVENTO": {
+                        "bsonType": "string"
+                    },
+                    "NUM_PROGRESSIVO_GLOBALE": {
+                        "bsonType": "number"
+                    }
+                }
+            }
+        },
+        {
+            "name": "PREVALENT",
+            "indexes": [
+                {
+                    "key": {
+                        "_id": 1
+                    }
+                },
+                {
+                    "key": {
+                        "CODPAZ": 1
+                    }
+                },
+                {
+                    "key": {
+                        "DATA": 1
+                    }
+                }
+            ],
+            "uniqueIndexes": [],
+            "document": {
+                "properties": {
+                    "_id": {
+                        "bsonType": "objectId"
+                    },
+                    "SEZIONE": {
+                        "bsonType": "number"
+                    },
+                    "CODPAZ": {
+                        "bsonType": "number"
+                    },
+                    "DATA": {
+                        "bsonType": "date"
+                    },
+                    "DIABETE": {
+                        "bsonType": "string"
+                    },
+                    "DIABETE_INSULINE_TREATED": {
+                        "bsonType": "string"
+                    },
+                    "DIABETE_ORAL_TERAPY": {
+                        "bsonType": "string"
+                    },
+                    "DISLIPIDEMIA": {
+                        "bsonType": "string"
+                    },
+                    "DISLIPIDEMIA_STATINE": {
+                        "bsonType": "string"
+                    },
+                    "DISLIPIDEMIA_FIBRATI": {
+                        "bsonType": "string"
+                    },
+                    "BMI": {
+                        "bsonType": "number"
+                    },
+                    "OBESITA": {
+                        "bsonType": "string"
+                    },
+                    "PREVIOUS_IMA": {
+                        "bsonType": "string"
+                    },
+                    "CAD": {
+                        "bsonType": "string"
+                    },
+                    "ATRIAL_FIBRILLATION": {
+                        "bsonType": "string"
+                    },
+                    "PESO": {
+                        "bsonType": "number"
+                    },
+                    "ALTEZZA": {
+                        "bsonType": "number"
+                    },
+                    "PASDOMICILIO": {
+                        "bsonType": "number"
+                    },
+                    "PADDOMICILIO": {
+                        "bsonType": "number"
+                    },
+                    "PACLINOMINM": {
+                        "bsonType": "number"
+                    },
+                    "PACLINOMAXM": {
+                        "bsonType": "number"
+                    },
+                    "FREQCLINO": {
+                        "bsonType": "number"
+                    },
+                    "PAORTOMINM": {
+                        "bsonType": "number"
+                    },
+                    "PAORTOMAXM": {
+                        "bsonType": "number"
+                    },
+                    "FREQORTO": {
+                        "bsonType": "number"
+                    },
+                    "PASITMINM": {
+                        "bsonType": "number"
+                    },
+                    "PASITMAXM": {
+                        "bsonType": "number"
+                    },
+                    "FREQSIT": {
+                        "bsonType": "number"
+                    },
+                    "FUMO": {
+                        "bsonType": "string"
+                    },
+                    "DIURETICI": {
+                        "bsonType": "string"
+                    },
+                    "ALFABLOCCANTI": {
+                        "bsonType": "string"
+                    },
+                    "BETABLOCCANTI": {
+                        "bsonType": "string"
+                    },
+                    "ACEINIBITORI": {
+                        "bsonType": "string"
+                    },
+                    "AT1ANTAGONISTI": {
+                        "bsonType": "string"
+                    },
+                    "DIIDROPIRIDINICI": {
+                        "bsonType": "string"
+                    },
+                    "ANTIARITMICI": {
+                        "bsonType": "string"
+                    },
+                    "ANTIAGGREGANTI": {
+                        "bsonType": "string"
+                    },
+                    "ANTICOAGULANTI": {
+                        "bsonType": "string"
+                    },
+                    "SEGUETERAPIA": {
+                        "bsonType": "string"
+                    },
+                    "TIPO_DI_RICOVERO_CARDIO": {
+                        "bsonType": "string"
+                    },
+                    "TIPO_DI_RICOVERO_EXTRA": {
+                        "bsonType": "string"
+                    },
+                    "CAUSA_RICOVERO_EXTRA": {
+                        "bsonType": "string"
+                    },
+                    "NYHA": {
+                        "bsonType": "string"
+                    },
+                    "STADIO_SCOMPENSO": {
+                        "bsonType": "string"
+                    },
+                    "GATE_DI_INGRESSO": {
+                        "bsonType": "string"
+                    }
+                }
+            }
+        },
+        {
+            "name": "RICOVERO_OSPEDALIERO",
+            "indexes": [
+                {
+                    "key": {
+                        "_id": 1
+                    }
+                },
+                {
+                    "key": {
+                        "CODPAZ": 1
+                    }
+                },
+                {
+                    "key": {
+                        "DATA": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO_GLOBALE": 1
+                    }
+                }
+            ],
+            "uniqueIndexes": [],
+            "document": {
+                "properties": {
+                    "_id": {
+                        "bsonType": "objectId"
+                    },
+                    "SEZIONE": {
+                        "bsonType": "number"
+                    },
+                    "CODPAZ": {
+                        "bsonType": "number"
+                    },
+                    "DATA": {
+                        "bsonType": "date"
+                    },
+                    "NUM_PROGRESSIVO": {
+                        "bsonType": "number"
+                    },
+                    "RICHIESTA_RICOVERO": {
+                        "bsonType": "string"
+                    },
+                    "SINTOMI": {
+                        "bsonType": "string"
+                    },
+                    "SINTOMI_PS": {
+                        "bsonType": "string"
+                    },
+                    "NUM_PROGRESSIVO_GLOBALE": {
+                        "bsonType": "number"
+                    },
+                    "GATE_DI_INGRESSO": {
+                        "bsonType": "string"
+                    }
+                }
+            }
+        },
+        {
+            "name": "TEXT",
+            "indexes": [
+                {
+                    "key": {
+                        "_id": 1
+                    }
+                },
+                {
+                    "key": {
+                        "CODPAZ": 1
+                    }
+                },
+                {
+                    "key": {
+                        "DATA": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO_GLOBALE": 1
+                    }
+                }
+            ],
+            "uniqueIndexes": [],
+            "document": {
+                "properties": {
+                    "_id": {
+                        "bsonType": "objectId"
+                    },
+                    "SEZIONE": {
+                        "bsonType": "number"
+                    },
+                    "CODPAZ": {
+                        "bsonType": "number"
+                    },
+                    "DATA": {
+                        "bsonType": "date"
+                    },
+                    "NUM_PROGRESSIVO": {
+                        "bsonType": "number"
+                    },
+                    "TIPO_EVENTO": {
+                        "bsonType": "string"
+                    },
+                    "TEXT": {
+                        "bsonType": "string"
+                    },
+                    "MATCHED_CONCEPTS": {
+                        "bsonType": "string"
+                    },
+                    "DIABETE": {
+                        "bsonType": "string"
+                    },
+                    "DISLIPIDEMIA": {
+                        "bsonType": "string"
+                    },
+                    "DISLIPIDEMIA_IPERCOLESTEROLEMIA": {
+                        "bsonType": "string"
+                    },
+                    "DISLIPIDEMIA_IPERTRIGLICERIDEMIA": {
+                        "bsonType": "string"
+                    },
+                    "DISLIPIDEMIA_MISTA": {
+                        "bsonType": "string"
+                    },
+                    "FUMO_CURRENT": {
+                        "bsonType": "string"
+                    },
+                    "FUMO_EX": {
+                        "bsonType": "string"
+                    },
+                    "IPERTENSIONE_ARTERIOSA": {
+                        "bsonType": "string"
+                    },
+                    "OBESITA": {
+                        "bsonType": "string"
+                    },
+                    "IRC_CKD": {
+                        "bsonType": "string"
+                    },
+                    "IRC_STADIO5": {
+                        "bsonType": "string"
+                    },
+                    "CAD": {
+                        "bsonType": "string"
+                    },
+                    "CAD_FAMILIARITY": {
+                        "bsonType": "string"
+                    },
+                    "BPCO": {
+                        "bsonType": "string"
+                    },
+                    "ATRIAL_FIBRILLATION": {
+                        "bsonType": "string"
+                    },
+                    "PREVIOUS_IMA": {
+                        "bsonType": "string"
+                    },
+                    "PREVIOUS_PCI": {
+                        "bsonType": "string"
+                    },
+                    "PREVIOUS_CABG": {
+                        "bsonType": "string"
+                    },
+                    "STROKE": {
+                        "bsonType": "string"
+                    },
+                    "REVASCULARIZATION_PERIPHERAL": {
+                        "bsonType": "string"
+                    },
+                    "AORTIC_DISEASE": {
+                        "bsonType": "string"
+                    },
+                    "HEART_FAILURE": {
+                        "bsonType": "string"
+                    },
+                    "PERIPHERAL_ARTERY_DISEASE": {
+                        "bsonType": "string"
+                    },
+                    "SVA_SVM": {
+                        "bsonType": "string"
+                    },
+                    "ICD": {
+                        "bsonType": "string"
+                    },
+                    "PM": {
+                        "bsonType": "string"
+                    },
+                    "CRT_D": {
+                        "bsonType": "string"
+                    },
+                    "MATCHED_CONCEPTS_1": {
+                        "bsonType": "string"
+                    },
+                    "MATCHED_CONCEPT_TYPES": {
+                        "bsonType": "string"
+                    },
+                    "NUM_PROGRESSIVO_GLOBALE": {
+                        "bsonType": "number"
+                    },
+                    "GATE_DI_INGRESSO": {
+                        "bsonType": "string"
+                    }
+                }
+            }
+        },
+        {
+            "name": "VISITA_CONTROLLO_ECG",
+            "indexes": [
+                {
+                    "key": {
+                        "_id": 1
+                    }
+                },
+                {
+                    "key": {
+                        "CODPAZ": 1
+                    }
+                },
+                {
+                    "key": {
+                        "DATA": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO": 1
+                    }
+                },
+                {
+                    "key": {
+                        "NUM_PROGRESSIVO_GLOBALE": 1
+                    }
+                }
+            ],
+            "uniqueIndexes": [],
+            "document": {
+                "properties": {
+                    "_id": {
+                        "bsonType": "objectId"
+                    },
+                    "SEZIONE": {
+                        "bsonType": "number"
+                    },
+                    "CODPAZ": {
+                        "bsonType": "number"
+                    },
+                    "DATA": {
+                        "bsonType": "date"
+                    },
+                    "NUM_PROGRESSIVO": {
+                        "bsonType": "number"
+                    },
+                    "DIABETE": {
+                        "bsonType": "string"
+                    },
+                    "DIABETE_INSULINE_TREATED": {
+                        "bsonType": "string"
+                    },
+                    "DIABETE_ORAL_TERAPY": {
+                        "bsonType": "string"
+                    },
+                    "DISLIPIDEMIA": {
+                        "bsonType": "string"
+                    },
+                    "DISLIPIDEMIA_STATINE": {
+                        "bsonType": "string"
+                    },
+                    "DISLIPIDEMIA_FIBRATI": {
+                        "bsonType": "string"
+                    },
+                    "BMI": {
+                        "bsonType": "number"
+                    },
+                    "OBESITA": {
+                        "bsonType": "string"
+                    },
+                    "PREVIOUS_IMA": {
+                        "bsonType": "string"
+                    },
+                    "CAD": {
+                        "bsonType": "string"
+                    },
+                    "ATRIAL_FIBRILLATION": {
+                        "bsonType": "string"
+                    },
+                    "PESO": {
+                        "bsonType": "number"
+                    },
+                    "ALTEZZA": {
+                        "bsonType": "number"
+                    },
+                    "PASDOMICILIO": {
+                        "bsonType": "number"
+                    },
+                    "PADDOMICILIO": {
+                        "bsonType": "number"
+                    },
+                    "PACLINOMINM": {
+                        "bsonType": "number"
+                    },
+                    "PACLINOMAXM": {
+                        "bsonType": "number"
+                    },
+                    "FREQCLINO": {
+                        "bsonType": "number"
+                    },
+                    "PAORTOMINM": {
+                        "bsonType": "number"
+                    },
+                    "PAORTOMAXM": {
+                        "bsonType": "number"
+                    },
+                    "FREQORTO": {
+                        "bsonType": "number"
+                    },
+                    "PASITMINM": {
+                        "bsonType": "number"
+                    },
+                    "PASITMAXM": {
+                        "bsonType": "number"
+                    },
+                    "FREQSIT": {
+                        "bsonType": "number"
+                    },
+                    "FUMO": {
+                        "bsonType": "string"
+                    },
+                    "DIURETICI": {
+                        "bsonType": "string"
+                    },
+                    "ALFABLOCCANTI": {
+                        "bsonType": "string"
+                    },
+                    "BETABLOCCANTI": {
+                        "bsonType": "string"
+                    },
+                    "ACEINIBITORI": {
+                        "bsonType": "string"
+                    },
+                    "AT1ANTAGONISTI": {
+                        "bsonType": "string"
+                    },
+                    "DIIDROPIRIDINICI": {
+                        "bsonType": "string"
+                    },
+                    "ANTIARITMICI": {
+                        "bsonType": "string"
+                    },
+                    "ANTIAGGREGANTI": {
+                        "bsonType": "string"
+                    },
+                    "ANTICOAGULANTI": {
+                        "bsonType": "string"
+                    },
+                    "SEGUETERAPIA": {
+                        "bsonType": "string"
+                    },
+                    "TIPO_DI_RICOVERO_CARDIO": {
+                        "bsonType": "string"
+                    },
+                    "TIPO_DI_RICOVERO_EXTRA": {
+                        "bsonType": "string"
+                    },
+                    "CAUSA_RICOVERO_EXTRA": {
+                        "bsonType": "string"
+                    },
+                    "NYHA": {
+                        "bsonType": "string"
+                    },
+                    "STADIO_SCOMPENSO": {
+                        "bsonType": "string"
+                    },
+                    "NUM_PROGRESSIVO_GLOBALE": {
+                        "bsonType": "number"
+                    },
+                    "GATE_DI_INGRESSO": {
+                        "bsonType": "string"
+                    }
+                }
+            }
         }
-      }
-    },
-    {
-      "name": "ANAMNESI",
-      "indexes": [
-        { "key": { "_id": 1 } },
-        { "key": { "CODPAZ": 1 } },
-        { "key": { "DATA": 1 } },
-        { "key": { "NUM_PROGRESSIVO": 1 } },
-        { "key": { "NUM_PROGRESSIVO_GLOBALE": 1 } }
-      ],
-      "uniqueIndexes": [],
-      "document": {
-        "properties": {
-          "_id": { "bsonType": "objectId" },
-          "SEZIONE": { "bsonType": "number" },
-          "CODPAZ": { "bsonType": "number" },
-          "DATA": { "bsonType": "date" },
-          "NUM_PROGRESSIVO": { "bsonType": "number" },
-          "DIABETE": { "bsonType": "string" },
-          "DISLIPIDEMIA": { "bsonType": "string" },
-          "DISLIPIDEMIA_IPERCOLESTEROLEMIA": { "bsonType": "string" },
-          "DISLIPIDEMIA_IPERTRIGLICERIDEMIA": { "bsonType": "string" },
-          "DISLIPIDEMIA_MISTA": { "bsonType": "string" },
-          "FUMO": { "bsonType": "string" },
-          "PREVIOUS_IMA": { "bsonType": "string" },
-          "PREVIOUS_PCI": { "bsonType": "number" },
-          "PREVIOUS_CABG": { "bsonType": "number" },
-          "CAD": { "bsonType": "string" },
-          "STROKE": { "bsonType": "string" },
-          "CAD_FAMILIARITY_CEREBRAL": { "bsonType": "string" },
-          "CAD_FAMILIARITY_CARDIAC": { "bsonType": "string" },
-          "CAD_FAMILIARITY": { "bsonType": "string" },
-          "NUM_PROGRESSIVO_GLOBALE": { "bsonType": "number" },
-          "GATE_DI_INGRESSO": { "bsonType": "string" }
-        }
-      }
-    },
-    {
-    "name": "CORONAROGRAFIA_PTCA",
-    "indexes": [
-        { "key": { "_id": 1 } },
-        { "key": { "CODPAZ": 1 } },
-        { "key": { "DATA": 1 } },
-        { "key": { "NUM_PROGRESSIVO": 1 } },
-        { "key": { "NUM_PROGRESSIVO_GLOBALE": 1 } }
     ],
-    "uniqueIndexes": [],
-    "document": {
-        "properties": {
-        "_id": { "bsonType": "objectId" },
-        "SEZIONE": { "bsonType": "number" },
-        "CODPAZ": { "bsonType": "number" },
-        "DATA": { "bsonType": "date" },
-        "NUM_PROGRESSIVO": { "bsonType": "number" },
-        "LESIONI_TC": { "bsonType": "string" },
-        "LESIONI_IVA": { "bsonType": "string" },
-        "LESIONI_CX": { "bsonType": "string" },
-        "LESIONI_DX": { "bsonType": "string" },
-        "NUM_PROGRESSIVO_GLOBALE": { "bsonType": "number" },
-        "GATE_DI_INGRESSO": { "bsonType": "string" }
-        }
-      }
-    },
-    {
-      "name": "ECOCARDIO_DATI",
-      "indexes": [
-        { "key": { "_id": 1 } },
-        { "key": { "CODPAZ": 1 } },
-        { "key": { "DATA": 1 } },
-        { "key": { "NUM_PROGRESSIVO": 1 } },
-        { "key": { "NUM_PROGRESSIVO_GLOBALE": 1 } }
-      ],
-      "uniqueIndexes": [],
-      "document": {
-        "properties": {
-          "_id": { "bsonType": "objectId" },
-          "SEZIONE": { "bsonType": "number" },
-          "CODPAZ": { "bsonType": "number" },
-          "DATA": { "bsonType": "date" },
-          "NUM_PROGRESSIVO": { "bsonType": "number" },
-          "EF": { "bsonType": "number" },
-          "AORTA_ASCENDENTE": { "bsonType": "number" },
-          "AORTA_ADDOMINALE": { "bsonType": "number" },
-          "PESO": { "bsonType": "number" },
-          "ALTEZZA": { "bsonType": "number" },
-          "PAS": { "bsonType": "number" },
-          "PAD": { "bsonType": "number" },
-          "RR": { "bsonType": "number" },
-          "AORTA": { "bsonType": "number" },
-          "VSTD": { "bsonType": "number" },
-          "VSTS": { "bsonType": "number" },
-          "SIVTD": { "bsonType": "number" },
-          "PPTD": { "bsonType": "number" },
-          "PFVE": { "bsonType": "number" },
-          "PFVA": { "bsonType": "number" },
-          "EA": { "bsonType": "number" },
-          "DT": { "bsonType": "number" },
-          "LVVS": { "bsonType": "number" },
-          "LVVD": { "bsonType": "number" },
-          "LVVD_2CH": { "bsonType": "number" },
-          "LVVS_2CH": { "bsonType": "number" },
-          "E_TDI_SETTALE": { "bsonType": "number" },
-          "E_TDI": { "bsonType": "number" },
-          "LAV": { "bsonType": "number" },
-          "_2CH_LAV": { "bsonType": "number" },
-          "JET_RIG_TRIC": { "bsonType": "number" },
-          "TAPSE": { "bsonType": "number" },
-          "ATRIO": { "bsonType": "string" },
-          "BICUSPIDE": { "bsonType": "string" },
-          "INSUFFICIENZA_AORTICA": { "bsonType": "string" },
-          "INSUFFICIENZA_MITRALICA": { "bsonType": "string" },
-          "INSUFFICIENZA_TRICUSPIDALICA": { "bsonType": "string" },
-          "STENOSI_AORTICA": { "bsonType": "string" },
-          "STENOSI_MITRALICA": { "bsonType": "string" },
-          "TROMBO": { "bsonType": "string" },
-          "HEART_FAILURE": { "bsonType": "string" },
-          "AORTIC_DISEASE_ASCENDING_AORTIC_DILATION": { "bsonType": "string" },
-          "AORTIC_DISEASE_ASCENDING_AORTIC_ANEURYSM": { "bsonType": "string" },
-          "AORTIC_DISEASE_ABDOMINAL_AORTIC_ANEURYSM": { "bsonType": "string" },
-          "NUM_PROGRESSIVO_GLOBALE": { "bsonType": "number" },
-          "GATE_DI_INGRESSO": { "bsonType": "string" }
-        }
-      }
-    },
-    {
-      "name": "ECOCAROTIDI",
-      "indexes": [
-        { "key": { "_id": 1 } },
-        { "key": { "CODPAZ": 1 } },
-        { "key": { "DATA": 1 } },
-        { "key": { "NUM_PROGRESSIVO": 1 } },
-        { "key": { "NUM_PROGRESSIVO_GLOBALE": 1 } }
-      ],
-      "uniqueIndexes": [],
-      "document": {
-        "properties": {
-          "_id": { "bsonType": "objectId" },
-          "SEZIONE": { "bsonType": "number" },
-          "CODPAZ": { "bsonType": "number" },
-          "DATA": { "bsonType": "date" },
-          "NUM_PROGRESSIVO": { "bsonType": "number" },
-          "C_COMUNE_DIAMETRO": { "bsonType": "number" },
-          "IMTMAX": { "bsonType": "number" },
-          "MAXIMTNEARCIDX": { "bsonType": "number" },
-          "MAXIMTNEARCISX": { "bsonType": "number" },
-          "MAXIMTFARCIDX": { "bsonType": "number" },
-          "MAXIMTFARCISX": { "bsonType": "number" },
-          "MAXIMTNEARBDX": { "bsonType": "number" },
-          "MAXIMTNEARBSX": { "bsonType": "number" },
-          "MAXIMTFARBDX": { "bsonType": "number" },
-          "MAXIMTFARBSX": { "bsonType": "number" },
-          "MAXIMTNEARCCDX": { "bsonType": "number" },
-          "MAXIMTNEARCCSX": { "bsonType": "number" },
-          "MAXIMTFARCCDX": { "bsonType": "number" },
-          "MAXIMTFARCCSX": { "bsonType": "number" },
-          "ESAME_NELLA_NORMA": { "bsonType": "string" },
-          "ATEROSCLEROSI_LIEVE": { "bsonType": "string" },
-          "ATEROSCLEROSI_MODERATA": { "bsonType": "string" },
-          "ATEROSCLEROSI_SEVERA": { "bsonType": "string" },
-          "NUM_PROGRESSIVO_GLOBALE": { "bsonType": "number" },
-          "GATE_DI_INGRESSO": { "bsonType": "string" }
-        }
-      }
-    },
-    {
-      "name": "ESAMI_LABORATORIO",
-      "indexes": [
-        { "key": { "_id": 1 } },
-        { "key": { "CODPAZ": 1 } },
-        { "key": { "DATA": 1 } },
-        { "key": { "NUM_PROGRESSIVO": 1 } },
-        { "key": { "NUM_PROGRESSIVO_GLOBALE": 1 } }
-      ],
-      "uniqueIndexes": [],
-      "document": {
-        "properties": {
-          "_id": { "bsonType": "objectId" },
-          "SEZIONE": { "bsonType": "number" },
-          "CODPAZ": { "bsonType": "number" },
-          "DATA": { "bsonType": "date" },
-          "NUM_PROGRESSIVO": { "bsonType": "number" },
-          "GLICEMIA": { "bsonType": "number" },
-          "CREATININEMIA": { "bsonType": "number" },
-          "EMOGLOBINA": { "bsonType": "number" },
-          "URICEMIA": { "bsonType": "number" },
-          "SODIEMIA": { "bsonType": "number" },
-          "POTASSIEMIA": { "bsonType": "number" },
-          "CALCEMIA": { "bsonType": "number" },
-          "TRIGLICERIDI": { "bsonType": "number" },
-          "COLESTEROLO": { "bsonType": "number" },
-          "HDL": { "bsonType": "number" },
-          "PCR": { "bsonType": "number" },
-          "HBA1C_PERC": { "bsonType": "number" },
-          "MALBUMINURIA": { "bsonType": "number" },
-          "PROTEINURIA24": { "bsonType": "number" },
-          "OMOCISTEINEMIA": { "bsonType": "number" },
-          "PROTEINE_TOTALI": { "bsonType": "number" },
-          "ALBUMINE": { "bsonType": "number" },
-          "GOT": { "bsonType": "number" },
-          "GPT": { "bsonType": "number" },
-          "DIABETE": { "bsonType": "string" },
-          "FILTRATO_GFR": { "bsonType": "number" },
-          "CKD": { "bsonType": "string" },
-          "CKD_STADIO": { "bsonType": "string" },
-          "NUM_PROGRESSIVO_GLOBALE": { "bsonType": "number" },
-          "GATE_DI_INGRESSO": { "bsonType": "string" }
-        }
-      }
-    },
-    {
-      "name": "ESAMI_SPECIALISTICI",
-      "indexes": [
-        { "key": { "_id": 1 } },
-        { "key": { "CODPAZ": 1 } },
-        { "key": { "DATA": 1 } },
-        { "key": { "NUM_PROGRESSIVO": 1 } },
-        { "key": { "NUM_PROGRESSIVO_GLOBALE": 1 } }
-      ],
-      "uniqueIndexes": [],
-      "document": {
-        "properties": {
-          "_id": { "bsonType": "objectId" },
-          "SEZIONE": { "bsonType": "number" },
-          "CODPAZ": { "bsonType": "number" },
-          "DATA": { "bsonType": "date" },
-          "NUM_PROGRESSIVO": { "bsonType": "number" },
-          "FT3": { "bsonType": "number" },
-          "FT4": { "bsonType": "number" },
-          "TSH": { "bsonType": "number" },
-          "NUM_PROGRESSIVO_GLOBALE": { "bsonType": "number" },
-          "GATE_DI_INGRESSO": { "bsonType": "string" }
-        }
-      }
-    },
-    {
-      "name": "ESAMI_STRUMENTALI_CARDIO",
-      "indexes": [
-        { "key": { "_id": 1 } },
-        { "key": { "CODPAZ": 1 } },
-        { "key": { "DATA": 1 } },
-        { "key": { "NUM_PROGRESSIVO": 1 } },
-        { "key": { "NUM_PROGRESSIVO_GLOBALE": 1 } }
-      ],
-      "uniqueIndexes": [],
-      "document": {
-        "properties": {
-          "_id": { "bsonType": "objectId" },
-          "SEZIONE": { "bsonType": "number" },
-          "CODPAZ": { "bsonType": "number" },
-          "DATA": { "bsonType": "date" },
-          "NUM_PROGRESSIVO": { "bsonType": "number" },
-          "CONCLUSIONI": { "bsonType": "string" },
-          "NUM_PROGRESSIVO_GLOBALE": { "bsonType": "number" },
-          "GATE_DI_INGRESSO": { "bsonType": "string" }
-        }
-      }
-    },
-    {
-      "name": "LISTA_EVENTI",
-      "indexes": [
-        { "key": { "_id": 1 } },
-        { "key": { "CODPAZ": 1 } },
-        { "key": { "DATA": 1 } },
-        { "key": { "NUM_PROGRESSIVO": 1 } },
-        { "key": { "NUM_PROGRESSIVO_GLOBALE": 1 } }
-      ],
-      "uniqueIndexes": [],
-      "document": {
-        "properties": {
-          "_id": { "bsonType": "objectId" },
-          "SEZIONE": { "bsonType": "number" },
-          "CODPAZ": { "bsonType": "number" },
-          "DATA": { "bsonType": "date" },
-          "NUM_PROGRESSIVO": { "bsonType": "number" },
-          "TIPO_EVENTO": { "bsonType": "string" },
-          "NUM_PROGRESSIVO_GLOBALE": { "bsonType": "number" }
-        }
-      }
-    },
-    {
-      "name": "PREVALENT",
-      "indexes": [
-        { "key": { "_id": 1 } },
-        { "key": { "CODPAZ": 1 } },
-        { "key": { "DATA": 1 } }
-      ],
-      "uniqueIndexes": [],
-      "document": {
-        "properties": {
-          "_id": { "bsonType": "objectId" },
-          "SEZIONE": { "bsonType": "number" },
-          "CODPAZ": { "bsonType": "number" },
-          "DATA": { "bsonType": "date" },
-          "DIABETE": { "bsonType": "string" },
-          "DIABETE_INSULINE_TREATED": { "bsonType": "string" },
-          "DIABETE_ORAL_TERAPY": { "bsonType": "string" },
-          "DISLIPIDEMIA": { "bsonType": "string" },
-          "DISLIPIDEMIA_STATINE": { "bsonType": "string" },
-          "DISLIPIDEMIA_FIBRATI": { "bsonType": "string" },
-          "BMI": { "bsonType": "number" },
-          "OBESITA": { "bsonType": "string" },
-          "PREVIOUS_IMA": { "bsonType": "string" },
-          "CAD": { "bsonType": "string" },
-          "ATRIAL_FIBRILLATION": { "bsonType": "string" },
-          "PESO": { "bsonType": "number" },
-          "ALTEZZA": { "bsonType": "number" },
-          "PASDOMICILIO": { "bsonType": "number" },
-          "PADDOMICILIO": { "bsonType": "number" },
-          "PACLINOMINM": { "bsonType": "number" },
-          "PACLINOMAXM": { "bsonType": "number" },
-          "FREQCLINO": { "bsonType": "number" },
-          "PAORTOMINM": { "bsonType": "number" },
-          "PAORTOMAXM": { "bsonType": "number" },
-          "FREQORTO": { "bsonType": "number" },
-          "PASITMINM": { "bsonType": "number" },
-          "PASITMAXM": { "bsonType": "number" },
-          "FREQSIT": { "bsonType": "number" },
-          "FUMO": { "bsonType": "string" },
-          "DIURETICI": { "bsonType": "string" },
-          "ALFABLOCCANTI": { "bsonType": "string" },
-          "BETABLOCCANTI": { "bsonType": "string" },
-          "ACEINIBITORI": { "bsonType": "string" },
-          "AT1ANTAGONISTI": { "bsonType": "string" },
-          "DIIDROPIRIDINICI": { "bsonType": "string" },
-          "ANTIARITMICI": { "bsonType": "string" },
-          "ANTIAGGREGANTI": { "bsonType": "string" },
-          "ANTICOAGULANTI": { "bsonType": "string" },
-          "SEGUETERAPIA": { "bsonType": "string" },
-          "TIPO_DI_RICOVERO_CARDIO": { "bsonType": "string" },
-          "TIPO_DI_RICOVERO_EXTRA": { "bsonType": "string" },
-          "CAUSA_RICOVERO_EXTRA": { "bsonType": "string" },
-          "NYHA": { "bsonType": "string" },
-          "STADIO_SCOMPENSO": { "bsonType": "string" },
-          "GATE_DI_INGRESSO": { "bsonType": "string" }
-        }
-      }
-    },
-    {
-      "name": "RICOVERO_OSPEDALIERO",
-      "indexes": [
-        { "key": { "_id": 1 } },
-        { "key": { "CODPAZ": 1 } },
-        { "key": { "DATA": 1 } },
-        { "key": { "NUM_PROGRESSIVO": 1 } },
-        { "key": { "NUM_PROGRESSIVO_GLOBALE": 1 } }
-      ],
-      "uniqueIndexes": [],
-      "document": {
-        "properties": {
-          "_id": { "bsonType": "objectId" },
-          "SEZIONE": { "bsonType": "number" },
-          "CODPAZ": { "bsonType": "number" },
-          "DATA": { "bsonType": "date" },
-          "NUM_PROGRESSIVO": { "bsonType": "number" },
-          "RICHIESTA_RICOVERO": { "bsonType": "string" },
-          "SINTOMI": { "bsonType": "string" },
-          "SINTOMI_PS": { "bsonType": "string" },
-          "NUM_PROGRESSIVO_GLOBALE": { "bsonType": "number" },
-          "GATE_DI_INGRESSO": { "bsonType": "string" }
-        }
-      }
-    },
-    {
-      "name": "TEXT",
-      "indexes": [
-        { "key": { "_id": 1 } },
-        { "key": { "CODPAZ": 1 } },
-        { "key": { "DATA": 1 } },
-        { "key": { "NUM_PROGRESSIVO": 1 } },
-        { "key": { "NUM_PROGRESSIVO_GLOBALE": 1 } }
-      ],
-      "uniqueIndexes": [],
-      "document": {
-        "properties": {
-          "_id": { "bsonType": "objectId" },
-          "SEZIONE": { "bsonType": "number" },
-          "CODPAZ": { "bsonType": "number" },
-          "DATA": { "bsonType": "date" },
-          "NUM_PROGRESSIVO": { "bsonType": "number" },
-          "TIPO_EVENTO": { "bsonType": "string" },
-          "TEXT": { "bsonType": "string" },
-          "MATCHED_CONCEPTS": { "bsonType": "string" },
-          "DIABETE": { "bsonType": "string" },
-          "DISLIPIDEMIA": { "bsonType": "string" },
-          "DISLIPIDEMIA_IPERCOLESTEROLEMIA": { "bsonType": "string" },
-          "DISLIPIDEMIA_IPERTRIGLICERIDEMIA": { "bsonType": "string" },
-          "DISLIPIDEMIA_MISTA": { "bsonType": "string" },
-          "FUMO_CURRENT": { "bsonType": "string" },
-          "FUMO_EX": { "bsonType": "string" },
-          "IPERTENSIONE_ARTERIOSA": { "bsonType": "string" },
-          "OBESITA": { "bsonType": "string" },
-          "IRC_CKD": { "bsonType": "string" },
-          "IRC_STADIO5": { "bsonType": "string" },
-          "CAD": { "bsonType": "string" },
-          "CAD_FAMILIARITY": { "bsonType": "string" },
-          "BPCO": { "bsonType": "string" },
-          "ATRIAL_FIBRILLATION": { "bsonType": "string" },
-          "PREVIOUS_IMA": { "bsonType": "string" },
-          "PREVIOUS_PCI": { "bsonType": "string" },
-          "PREVIOUS_CABG": { "bsonType": "string" },
-          "STROKE": { "bsonType": "string" },
-          "REVASCULARIZATION_PERIPHERAL": { "bsonType": "string" },
-          "AORTIC_DISEASE": { "bsonType": "string" },
-          "HEART_FAILURE": { "bsonType": "string" },
-          "PERIPHERAL_ARTERY_DISEASE": { "bsonType": "string" },
-          "SVA_SVM": { "bsonType": "string" },
-          "ICD": { "bsonType": "string" },
-          "PM": { "bsonType": "string" },
-          "CRT_D": { "bsonType": "string" },
-          "MATCHED_CONCEPTS_1": { "bsonType": "string" },
-          "MATCHED_CONCEPT_TYPES": { "bsonType": "string" },
-          "NUM_PROGRESSIVO_GLOBALE": { "bsonType": "number" },
-          "GATE_DI_INGRESSO": { "bsonType": "string" }
-        }
-      }
-    },
-    {
-      "name": "VISITA_CONTROLLO_ECG",
-      "indexes": [
-        { "key": { "_id": 1 } },
-        { "key": { "CODPAZ": 1 } },
-        { "key": { "DATA": 1 } },
-        { "key": { "NUM_PROGRESSIVO": 1 } },
-        { "key": { "NUM_PROGRESSIVO_GLOBALE": 1 } }
-      ],
-      "uniqueIndexes": [],
-      "document": {
-        "properties": {
-          "_id": { "bsonType": "objectId" },
-          "SEZIONE": { "bsonType": "number" },
-          "CODPAZ": { "bsonType": "number" },
-          "DATA": { "bsonType": "date" },
-          "NUM_PROGRESSIVO": { "bsonType": "number" },
-          "DIABETE": { "bsonType": "string" },
-          "DIABETE_INSULINE_TREATED": { "bsonType": "string" },
-          "DIABETE_ORAL_TERAPY": { "bsonType": "string" },
-          "DISLIPIDEMIA": { "bsonType": "string" },
-          "DISLIPIDEMIA_STATINE": { "bsonType": "string" },
-          "DISLIPIDEMIA_FIBRATI": { "bsonType": "string" },
-          "BMI": { "bsonType": "number" },
-          "OBESITA": { "bsonType": "string" },
-          "PREVIOUS_IMA": { "bsonType": "string" },
-          "CAD": { "bsonType": "string" },
-          "ATRIAL_FIBRILLATION": { "bsonType": "string" },
-          "PESO": { "bsonType": "number" },
-          "ALTEZZA": { "bsonType": "number" },
-          "PASDOMICILIO": { "bsonType": "number" },
-          "PADDOMICILIO": { "bsonType": "number" },
-          "PACLINOMINM": { "bsonType": "number" },
-          "PACLINOMAXM": { "bsonType": "number" },
-          "FREQCLINO": { "bsonType": "number" },
-          "PAORTOMINM": { "bsonType": "number" },
-          "PAORTOMAXM": { "bsonType": "number" },
-          "FREQORTO": { "bsonType": "number" },
-          "PASITMINM": { "bsonType": "number" },
-          "PASITMAXM": { "bsonType": "number" },
-          "FREQSIT": { "bsonType": "number" },
-          "FUMO": { "bsonType": "string" },
-          "DIURETICI": { "bsonType": "string" },
-          "ALFABLOCCANTI": { "bsonType": "string" },
-          "BETABLOCCANTI": { "bsonType": "string" },
-          "ACEINIBITORI": { "bsonType": "string" },
-          "AT1ANTAGONISTI": { "bsonType": "string" },
-          "DIIDROPIRIDINICI": { "bsonType": "string" },
-          "ANTIARITMICI": { "bsonType": "string" },
-          "ANTIAGGREGANTI": { "bsonType": "string" },
-          "ANTICOAGULANTI": { "bsonType": "string" },
-          "SEGUETERAPIA": { "bsonType": "string" },
-          "TIPO_DI_RICOVERO_CARDIO": { "bsonType": "string" },
-          "TIPO_DI_RICOVERO_EXTRA": { "bsonType": "string" },
-          "CAUSA_RICOVERO_EXTRA": { "bsonType": "string" },
-          "NYHA": { "bsonType": "string" },
-          "STADIO_SCOMPENSO": { "bsonType": "string" },
-          "NUM_PROGRESSIVO_GLOBALE": { "bsonType": "number" },
-          "GATE_DI_INGRESSO": { "bsonType": "string" }
-        }
-      }
-    }
-  ],
-  "version": 1
+    "version": 1
 }

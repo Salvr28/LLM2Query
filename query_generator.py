@@ -29,10 +29,14 @@ class MongoDBQueryGenerator:
 
         context = self.retrieve_context(user_instruction)
 
-
         initial_prompt = f"""<s>
         Task Description:
-        Your task is to generate a **JSON object** that represents a MongoDB query to accurately fulfill the provided Instruct.
+        Your task is to generate a **JSON object** that represents a MongoDB query to accurately fulfill the provided "Instruct", OR to indicate if the "Instruct" is irrelevant to this task.
+        - If the "Instruct" is a valid request for a MongoDB query related to the provided "MongoDB Schema", generate a JSON object with "collection_name", "operation_type", and "arguments" keys as detailed below.
+        - If the "Instruct" is NOT a request for a MongoDB query OR is unrelated to the provided "MongoDB Schema" (e.g., a general question like "how are you?", a request for a recipe, a math problem, etc.), you MUST output a specific JSON object in the following format:
+        `{{"error_type": "irrelevant_request", "message": "Posso solo generare query MongoDB basate sullo schema e sul contesto forniti. Per favore, fai una domanda relativa all'interrogazione del database clinico."}}`
+
+        Details for valid MongoDB query JSON:
         The JSON object MUST have the following top-level keys:
         - "collection_name": (string) The name of the MongoDB collection.
         - "operation_type": (string) The type of MongoDB operation, which MUST be either "find" or "aggregate".
@@ -53,6 +57,8 @@ class MongoDBQueryGenerator:
         {context}
 
         Examples of desired JSON output:
+        Instruct: "Mostrami tutti i pazienti nati dopo il 1940, visualizzando nome e data di nascita."
+        Output:
         {{
         "collection_name": "ANAGRAFICA",
         "operation_type": "find",
@@ -61,28 +67,69 @@ class MongoDBQueryGenerator:
             "projection": {{"NOMEPAZ": 1, "DATADINASCITA": 1, "_id": 0}}
         }}
         }}
+
+        Instruct: "Quanti fumatori ci sono per ogni sezione, ordinati per sezione?"
+        Output:
         {{
         "collection_name": "ANAMNESI",
         "operation_type": "aggregate",
         "arguments": {{
             "pipeline": [
-            {{ "$match": {{"FUMO": "YES"}} }},
-            {{ "$group": {{"_id": "$SEZIONE": {{"$sum": 1}} }} }},
-            {{ "$sort": {{"SEZIONE": -1}} }}
+                {{"$match": {{"FUMO": "YES"}}}},
+                {{"$group": {{"_id": "$SEZIONE", "count": {{"$sum": 1}}}}}},
+                {{"$sort": {{"SEZIONE": -1}}}}
             ]
         }}
+        }}
+
+        Instruct: "Per ogni paziente che ha il diabete, elenca il suo codice paziente e tutte le date dei suoi ricoveri ospedalieri."
+        Output:
+        {{
+        "collection_name": "ANAMNESI",
+        "operation_type": "aggregate",
+        "arguments": {{
+            "pipeline": [
+                {{
+                    "$match": {{
+                        "DIABETE": "YES"
+                    }}
+                }},
+                {{
+                    "$lookup": {{
+                        "from": "RICOVERO_OSPEDALIERO",
+                        "localField": "CODPAZ",
+                        "foreignField": "CODPAZ",
+                        "as": "info_ricoveri"
+                    }}
+                }},
+                {{
+                    "$project": {{
+                        "_id": 0,
+                        "codice_paziente_anamnesi": "$CODPAZ",
+                        "date_ricoveri_ospedalieri": "$info_ricoveri.DATA"
+                    }}
+                }}
+            ]
+        }}
+        }}
+
+        Instruct: "Dammi la ricetta della carbonara."
+        Output:
+        {{
+        "error_type": "irrelevant_request",
+        "message": "Posso solo generare query MongoDB basate sullo schema e sul contesto forniti. Per favore, fai una domanda relativa all'interrogazione del database clinico."
         }}
 
         ### Instruct (User's natural language query):
         {user_instruction}
 
         ### Output (JSON object as a string):
-            """
-
+        """
 
         retry_prompt_template = f"""<s>
         Your previous attempt to generate a JSON object for the user's instruction resulted in an error because the output was not valid JSON.
         Please review your previous output and the error, then try again.
+        **Remember, your task is to generate a MongoDB query as a JSON object according to the schema, or the specific error JSON if the request is irrelevant.**
         Ensure your output is a single, valid JSON object string, with correct syntax (quotes, commas, brackets, braces).
         Output ONLY the JSON object as a valid JSON string. Do NOT include any explanations or markdown.
 
@@ -105,7 +152,6 @@ class MongoDBQueryGenerator:
 
         Corrected Output (JSON object as a string):
         """
-
 
         llm_output_text = ""
         json_error_for_retry = ""
@@ -139,8 +185,8 @@ class MongoDBQueryGenerator:
                         continue
                     else:
                         error_message = (f"L'output dell'LLM non era un JSON valido dopo {self.max_retries + 1} tentativi.\n"
-                                    f"Ultimo errore JSON: {json_error_for_retry}\n"
-                                    f"Ultimo Output LLM:\n---\n{llm_output_text}\n---")
+                                         f"Ultimo errore JSON: {json_error_for_retry}\n"
+                                         f"Ultimo Output LLM:\n---\n{llm_output_text}\n---")
                         print(error_message)
                         return None, error_message, context
 

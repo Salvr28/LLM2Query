@@ -37,10 +37,10 @@
                         "bsonType": "objectId"
                     },
                     "SEZIONE": {
-                        "bsonType": "string"
+                        "bsonType": "number"
                     },
                     "CODPAZ": {
-                        "bsonType": "string"
+                        "bsonType": "number"
                     },
                     "COGNOME": {
                         "bsonType": "string"
@@ -49,7 +49,7 @@
                         "bsonType": "string"
                     },
                     "DATADINASCITA": {
-                        "bsonType": "string"
+                        "bsonType": "date"
                     },
                     "SESSO": {
                         "bsonType": "string"
@@ -70,7 +70,7 @@
                         "bsonType": "string"
                     },
                     "DATA_DECESSO": {
-                        "bsonType": "string"
+                        "bsonType": "date"
                     }
                 }
             }

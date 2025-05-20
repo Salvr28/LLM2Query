@@ -35,6 +35,7 @@ class MongoDBQueryGenerator:
         - If the "Instruct" is a valid request for a MongoDB query related to the provided "MongoDB Schema", generate a JSON object with "collection_name", "operation_type", and "arguments" keys as detailed below.
         - If the "Instruct" is NOT a request for a MongoDB query OR is unrelated to the provided "MongoDB Schema" (e.g., a general question like "how are you?", a request for a recipe, a math problem, etc.), you MUST output a specific JSON object in the following format:
         `{{"error_type": "irrelevant_request", "message": "Posso solo generare query MongoDB basate sullo schema e sul contesto forniti. Per favore, fai una domanda relativa all'interrogazione del database clinico."}}`
+        IMPORTANT: For any filter values associated with the fields "COGNOME", "NOMEPAZ", or "COMUNE_DI_NASCITA", ensure the string value is in UPPERCASE. For example, if the user asks for "Rossi", the filter should be "COGNOME": "ROSSI".
 
         Details for valid MongoDB query JSON:
         The JSON object MUST have the following top-level keys:

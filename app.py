@@ -46,13 +46,36 @@ if prompt := st.chat_input("Chiedimi qualcosa..."):
         with st.spinner("Sto generando la query con Gemini Flash..."):
             generated_query, error_message, context = query_generator.generate_query(prompt)
 
+
         if error_message:
             # Mostra l'errore in modo più evidente se è un errore di parsing finale
             error_display = f"Si è verificato un errore persistente nella generazione della query:\n```text\n{error_message}\n```"
             st.error(error_display) # Usa st.error per evidenziare
             assistant_response_content = error_display
         elif generated_query:
-            success_message = "**Query JSON generata con successo:**"
+            try:
+                success_message = "**Query JSON generata con successo:**"
+                query_dict = json.loads(generated_query)
+                query_result = execute_mongodb_query(query_dict, config.MONGO_URI, config.MONGO_DB_NAME)
+
+                if query_result['success']:
+                    if query_result['data']:
+                        st.json(query_result['data'])
+                        assistant_response_content = f"{success_message}\n```json\n{generated_query}\n```\n**Risultati:**\n{json.dumps(query_result['data'], indent=2)}"
+                    else: 
+                        st.write("Nessun risultato trovato.")
+                        assistant_response_content = f"{success_message}\n```json\n{generated_query}\n```\nNessun risultato trovato."
+
+                else: 
+                    st.error(f"Errore durante l'esecuzione della query: {query_result['error']}")
+                    assistant_response_content = f"{success_message}\n```json\n{generated_query}\n```\n**Errore:**\n{query_result['error']}"
+                    
+
+            except Exception as e:
+                st.error(f"Si è verificato un errore durante l'esecuzione della query: {e}")
+                assistant_response_content = f"Si è verificato un errore durante l'esecuzione della query: {e}"     
+            
+            
             st.markdown(success_message)
             st.code(generated_query, language="json")
             assistant_response_content = f"{success_message}\n```json\n{generated_query}\n```"

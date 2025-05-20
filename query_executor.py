@@ -20,7 +20,7 @@ class MongoDBQueryExecutor:
         except pymongo.errors.OperationFailure as e:
             raise ConnectionError(f"Authentication failed: {str(e)}")
     
-    def execute_query(self, query_str: str) -> Dict[str, Any]:
+    def execute_query(self, query_dict: Dict[str, Any]) -> Dict[str, Any]:
         """Execute a MongoDB query string.
         
         Args:
@@ -34,62 +34,55 @@ class MongoDBQueryExecutor:
             "success": False,
             "data": None,
             "error": None,
-            "query_executed": query_str,
+            "query_executed": json.dumps(query_dict),
             "query_type": None,
             "affected_count": 0
         }
         
         try:
-            # Create a safe execution environment
-            exec_globals = {
-                "db": self.db,
-                "list": list,
-                "result_data": None,
-                "affected_count": 0,
-                "query_type": None
-            }
 
+            collection_name = query_dict.get('collection_name')
+            operation_type = query_dict.get('operation_type')
+            arguments = query_dict.get('arguments',{})
 
-            # Exec MongoDB query to obtain cursor
-         #   cursor = eval(query_str, exec_globals)
+            if not collection_name:
+                raise ValueError('collection_name is required')
+            collection = self.db[collection_name]
+
+            # Operation FIND
+            if operation_type == 'find':
+                result['query_type'] = 'find'
+                filter_criteria = arguments.get('filter', {})
+                projection = arguments.get('projection')
+                if projection:
+                    cursor = collection.find(filter_criteria, projection)
+                else: 
+                    cursor = collection.find(filter_criteria)
+                result_data = list(cursor)
+                result['data'] = self._sanitize_data(result_data)
+                result['affected_count'] = len(result_data)
+                result['success'] = True
+
+                
+            # Operation AGGREGATE
+            elif operation_type == 'aggregate':
+                result['query_type'] = 'aggregate'
+                pipeline = arguments.get('pipeline', [])
+                cursor = collection.aggregate(pipeline)
+                result_data = list(cursor)
+                result['data'] = self._sanitize_data(result_data)
+                result['affected_count'] = len(result_data)
+                result['success'] = True
             
-        #    if isinstance(cursor, pymongo.cursor.Cursor):
-       #         result_data = list(cursor)
-      #          if "find(" in query_str:
-     #               result["query_type"] = 'find'
-    #            elif "aggreagate(" in query_str:
-   #                 result["query_type"] = 'aggregate'
-  #              else:
- #                   result['query_type'] = 'generic-cursor'
-#
- #           else:
-#                result_data = cursor
-#                result['query_type']='other'
-#                result['affected_count']=0
-
-
-
-
-            # Determine query type and prepare execution code
-            if "find(" in query_str:
-                exec_code = f"result_data = list({query_str})\nquery_type = 'find'\naffected_count = len(result_data)"
-            elif "aggregate(" in query_str:
-                exec_code = f"result_data = list({query_str})\nquery_type = 'aggregate'\naffected_count = len(result_data)"
             else:
-                exec_code = f"result_data = {query_str}\nquery_type = 'other'"
+                raise ValueError(f"Unsupported operation type: {operation_type}")
             
-            # Execute the query
-            exec(exec_code, exec_globals)
-            
-            # Extract results
-            result["success"] = True
-            result["data"] = self._sanitize_data(exec_globals["result_data"])
-            result["query_type"] = exec_globals["query_type"]
-            result["affected_count"] = exec_globals["affected_count"]
-            
+
+
         except Exception as e:
-            result["error"] = str(e)
-            
+            result['error'] = str(e)
+            return result
+        
         return result
     
     def _sanitize_data(self, data: Any) -> Any:
@@ -130,7 +123,7 @@ class MongoDBQueryExecutor:
         self.close()
 
 # Helper function for direct execution
-def execute_mongodb_query(query_str: str, connection_string: str, db_name: str) -> Dict[str, Any]:
+def execute_mongodb_query(query_dict: Dict[str, Any], connection_string: str, db_name: str) -> Dict[str, Any]:
     """Execute a MongoDB query.
     
     Args:
@@ -143,6 +136,6 @@ def execute_mongodb_query(query_str: str, connection_string: str, db_name: str) 
     """
     executor = MongoDBQueryExecutor(connection_string, db_name)
     try:
-        return executor.execute_query(query_str)
+        return executor.execute_query(query_dict)
     finally:
         executor.close()

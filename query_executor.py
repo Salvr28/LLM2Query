@@ -1,4 +1,5 @@
 import pymongo
+from datetime import datetime
 from typing import Dict, List, Any, Union, Optional
 import json
 
@@ -53,6 +54,10 @@ class MongoDBQueryExecutor:
             if operation_type == 'find':
                 result['query_type'] = 'find'
                 filter_criteria = arguments.get('filter', {})
+
+                # Check Datetime
+                filter_criteria = self._convert_iso_strings_to_datetime(filter_criteria)
+
                 projection = arguments.get('projection')
                 if projection:
                     cursor = collection.find(filter_criteria, projection)
@@ -68,6 +73,10 @@ class MongoDBQueryExecutor:
             elif operation_type == 'aggregate':
                 result['query_type'] = 'aggregate'
                 pipeline = arguments.get('pipeline', [])
+
+                # Check Datetime
+                pipeline = self._convert_iso_strings_to_datetime(pipeline)
+
                 cursor = collection.aggregate(pipeline)
                 result_data = list(cursor)
                 result['data'] = self._sanitize_data(result_data)
@@ -112,6 +121,45 @@ class MongoDBQueryExecutor:
             return str(data)
             
         return repr(data)
+    
+    
+    def is_iso_format(self, field):
+        """
+        Controlla se una stringa è un formato data/ora ISO 8601 valido.
+
+        Args:
+            stringa_da_controllare (str): La stringa da verificare.
+
+        Returns:
+            bool: True se la stringa è un formato data/ora ISO 8601 valido, False altrimenti.
+        """
+        try:
+            datetime.fromisoformat(field)
+            return True     
+        except Exception as e:
+            return False
+    
+    def _convert_iso_strings_to_datetime(self, data):
+
+        # Dictionary Case
+        if isinstance(data, dict):
+            converted_data={}
+
+            for key, value in data.items():
+                if isinstance(value, str) and self.is_iso_format(value):
+                    converted_data[key] = datetime.fromisoformat(value)
+                elif isinstance(value, (dict, list)):
+                    converted_data[key] = self._convert_iso_strings_to_datetime(value)
+                else: 
+                    converted_data[key] = value
+
+            return converted_data
+            
+        # List Case
+        elif isinstance(data, list):
+            return [self._convert_iso_strings_to_datetime(item) for item in data]
+        else:
+            return data
     
     def close(self):
         """Close the MongoDB connection."""

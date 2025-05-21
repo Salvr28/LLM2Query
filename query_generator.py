@@ -36,7 +36,7 @@ class MongoDBQueryGenerator:
         - If the "Instruct" is NOT a request for a MongoDB query OR is unrelated to the provided "MongoDB Schema" (e.g., a general question like "how are you?", a request for a recipe, a math problem, etc.), you MUST output a specific JSON object in the following format:
         `{{"error_type": "irrelevant_request", "message": "Posso solo generare query MongoDB basate sullo schema e sul contesto forniti. Per favore, fai una domanda relativa all'interrogazione del database clinico."}}`
         IMPORTANT: For any filter values associated with the fields "COGNOME", "NOMEPAZ", or "COMUNE_DI_NASCITA", ensure the string value is in UPPERCASE. For example, if the user asks for "Rossi", the filter should be "COGNOME": "ROSSI".
-        IMPORTANT: For any date values, ensure the format is ISODate("YYYY-MM-DDT00:00:00.000+00:00") (e.g., ISODate("2023-01-01T00:00:00.000+00:00")). This is crucial for date comparisons in MongoDB queries.
+        IMPORTANT: For any date values, ensure the format is "YYYY-MM-DDT00:00:00.000+00:00" (e.g., "2023-01-01T00:00:00.000+00:00"). This is crucial for date comparisons in MongoDB queries.
         
         Details for valid MongoDB query JSON:
         The JSON object MUST have the following top-level keys:
@@ -65,7 +65,7 @@ class MongoDBQueryGenerator:
         "collection_name": "ANAGRAFICA",
         "operation_type": "find",
         "arguments": {{
-            "filter": {{"DATADINASCITA": {{"$gt": ISODate("1930-01-01T00:00:00.000+00:00")}}}},
+            "filter": {{"DATADINASCITA": {{"$gt": "1930-01-01T00:00:00.000+00:00"}}}},
             "projection": {{"NOMEPAZ": 1, "DATADINASCITA": 1, "_id": 0}}
         }}
         }}
@@ -219,4 +219,7 @@ class MongoDBQueryGenerator:
         else:
             # Se nessun blocco markdown è rilevato, restituisce il testo originale (dopo strip)
             return text
+        
+
+
 

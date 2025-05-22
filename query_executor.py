@@ -1,36 +1,29 @@
 import pymongo
 from datetime import datetime
-from typing import Dict, List, Any, Union, Optional
+from typing import Dict, Any
 import json
 
 class MongoDBQueryExecutor:
-    def __init__(self, connection_string: str, db_name: str):
+    def __init__(self, db: pymongo.database.Database):
         """Initialize MongoDB query executor.
-        
+
         Args:
-            connection_string: MongoDB connection string
-            db_name: Database name to connect to
+            db: An active pymongo.database.Database instance.
         """
-        try:
-            self.client = pymongo.MongoClient(connection_string)
-            self.db = self.client[db_name]
-            # Test connection
-            self.client.server_info()
-        except pymongo.errors.ServerSelectionTimeoutError:
-            raise ConnectionError("Failed to connect to MongoDB server")
-        except pymongo.errors.OperationFailure as e:
-            raise ConnectionError(f"Authentication failed: {str(e)}")
-    
+        if not isinstance(db, pymongo.database.Database):
+            raise TypeError("db must be a valid pymongo.database.Database instance")
+        self.db = db
+
     def execute_query(self, query_dict: Dict[str, Any]) -> Dict[str, Any]:
         """Execute a MongoDB query string.
-        
+
         Args:
             query_str: MongoDB query string to execute
-            
+
         Returns:
             Dictionary with query results and metadata
         """
-        
+
         result = {
             "success": False,
             "data": None,
@@ -39,7 +32,7 @@ class MongoDBQueryExecutor:
             "query_type": None,
             "affected_count": 0
         }
-        
+
         try:
 
             collection_name = query_dict.get('collection_name')
@@ -61,14 +54,14 @@ class MongoDBQueryExecutor:
                 projection = arguments.get('projection')
                 if projection:
                     cursor = collection.find(filter_criteria, projection)
-                else: 
+                else:
                     cursor = collection.find(filter_criteria)
                 result_data = list(cursor)
                 result['data'] = self._sanitize_data(result_data)
                 result['affected_count'] = len(result_data)
                 result['success'] = True
 
-                
+
             # Operation AGGREGATE
             elif operation_type == 'aggregate':
                 result['query_type'] = 'aggregate'
@@ -82,47 +75,46 @@ class MongoDBQueryExecutor:
                 result['data'] = self._sanitize_data(result_data)
                 result['affected_count'] = len(result_data)
                 result['success'] = True
-            
+
             else:
                 raise ValueError(f"Unsupported operation type: {operation_type}")
-            
+
 
 
         except Exception as e:
             result['error'] = str(e)
-            return result
-        
+
         return result
-    
+
     def _sanitize_data(self, data: Any) -> Any:
         """Sanitize MongoDB data for JSON serialization.
-        
+
         Args:
             data: Data to sanitize
-            
+
         Returns:
             JSON-serializable data
         """
         if data is None:
             return None
-            
+
         if isinstance(data, (str, int, float, bool)):
             return data
-            
+
         if isinstance(data, dict):
             # Convert ObjectId to string, etc.
             return {k: self._sanitize_data(v) for k, v in data.items()}
-            
+
         if isinstance(data, list):
             return [self._sanitize_data(item) for item in data]
-            
+
         # Handle MongoDB-specific types
         if hasattr(data, "__str__"):
             return str(data)
-            
+
         return repr(data)
-    
-    
+
+
     def is_iso_format(self, field):
         """
         Controlla se una stringa è un formato data/ora ISO 8601 valido.
@@ -135,10 +127,10 @@ class MongoDBQueryExecutor:
         """
         try:
             datetime.fromisoformat(field)
-            return True     
+            return True
         except Exception as e:
             return False
-    
+
     def _convert_iso_strings_to_datetime(self, data):
 
         # Dictionary Case
@@ -150,40 +142,27 @@ class MongoDBQueryExecutor:
                     converted_data[key] = datetime.fromisoformat(value)
                 elif isinstance(value, (dict, list)):
                     converted_data[key] = self._convert_iso_strings_to_datetime(value)
-                else: 
+                else:
                     converted_data[key] = value
 
             return converted_data
-            
+
         # List Case
         elif isinstance(data, list):
             return [self._convert_iso_strings_to_datetime(item) for item in data]
         else:
             return data
-    
-    def close(self):
-        """Close the MongoDB connection."""
-        if hasattr(self, 'client'):
-            self.client.close()
-            
-    def __del__(self):
-        """Destructor to ensure connection is closed."""
-        self.close()
 
 # Helper function for direct execution
-def execute_mongodb_query(query_dict: Dict[str, Any], connection_string: str, db_name: str) -> Dict[str, Any]:
+def execute_mongodb_query(db: pymongo.database.Database, query_dict: Dict[str, Any]) -> Dict[str, Any]:
     """Execute a MongoDB query.
-    
+
     Args:
-        query_str: MongoDB query string
-        connection_string: MongoDB connection string
-        db_name: Database name
-        
+        db: An active pymongo.database.Database instance
+        query_dict: MongoDB query dictionary to execute
+
     Returns:
         Dictionary with query results
     """
-    executor = MongoDBQueryExecutor(connection_string, db_name)
-    try:
-        return executor.execute_query(query_dict)
-    finally:
-        executor.close()
+    executor = MongoDBQueryExecutor(db)
+    return executor.execute_query(query_dict)

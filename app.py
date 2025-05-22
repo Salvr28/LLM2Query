@@ -3,11 +3,8 @@ import streamlit as st
 st.set_page_config(layout="wide")
 
 import json
-#import torch
-#from sentence_transformers import SentenceTransformer
-#import chromadb
-#from chromadb.config import Settings
-#import google.generativeai as genai
+import pandas as pd
+from datetime import datetime
 from query_generator import MongoDBQueryGenerator
 from query_executor import execute_mongodb_query
 import config
@@ -49,6 +46,16 @@ db = init_db_connection()
 # -----------------------------Streamlit Interface----------------------------------------------------
 st.title("QueryDoctor")
 
+# --- Session State for correctness ---
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "df_to_display" not in st.session_state:
+    st.session_state.df_to_display = None
+if "context_to_display" not in st.session_state:
+    st.session_state.context_to_display = None
+if "show_last_query_results" not in st.session_state:
+    st.session_state.show_last_query_results = False
+
 # --- Menu Laterale ---
 st.sidebar.title("Menu Navigazione")
 app_mode = st.sidebar.selectbox(
@@ -60,63 +67,113 @@ if app_mode == "Assistente":
     st.sidebar.info("Chiedi qualsiasi cosa riguardo il tuo database. L'assistente cercherà di interpretare i tuoi bisogni e di fornirti un risultato adeguato.")
     st.header("Assistente")
 
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
-    for message in st.session_state.messages:
+    for msg_idx, message in enumerate(st.session_state.messages):
         with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+            st.markdown(message["content"], unsafe_allow_html=True)
 
     if prompt := st.chat_input("Chiedimi qualcosa..."):
         st.chat_message("user").markdown(prompt)
         st.session_state.messages.append({"role": "user", "content": prompt})
 
-        with st.chat_message("assistant"):
-            with st.spinner("Sto generando la query..."):
-                generated_query, error_message, context = query_generator.generate_query(prompt)
+        # Reset dello stato per i nuovi risultati che verranno visualizzati dalla sezione persistente
+        st.session_state.df_to_display = None
+        st.session_state.context_to_display = None
+        st.session_state.show_last_query_results = False
 
-            assistant_response_parts = []
+        parts_for_history_and_immediate_display = []
 
+        with st.spinner("Sto generando la query..."):
+            generated_query, error_message, context = query_generator.generate_query(prompt)
 
-            if error_message:
-                # Mostra l'errore in modo più evidente se è un errore di parsing finale
-                error_display = f"Si è verificato un errore persistente nella generazione della query:\n```text\n{error_message}\n```"
-                st.error(error_display) # Usa st.error per evidenziare
-                assistant_response_parts.append(error_display)
-            elif generated_query:
-                success_message = "**Query JSON generata con successo:**"
-                st.markdown(success_message)
-                st.code(generated_query, language="json")
-                assistant_response_parts.append(f"{success_message}\n```json\n{generated_query}\n```")
+        if context:
+            st.session_state.context_to_display = context # Salva per la sezione persistente
 
-                try:
+        if error_message:
+            error_display_text = f"Si è verificato un errore persistente nella generazione della query:\n```text\n{error_message}\n```"
+            parts_for_history_and_immediate_display.append(error_display_text)
+        elif generated_query:
+            query_json_for_history = f"**Query JSON generata con successo:**\n```json\n{generated_query}\n```"
+            parts_for_history_and_immediate_display.append(query_json_for_history)
+            try:
+                query_dict = json.loads(generated_query)
+                if query_dict.get("error_type") == "irrelevant_request":
+                    msg_irrelevant = query_dict.get("message", "Richiesta non pertinente.")
+                    parts_for_history_and_immediate_display.append(f"\n**Nota:** {msg_irrelevant}")
+                else:
+                    if db is not None:
+                        with st.spinner("Esecuzione della query..."):
+                            query_result = execute_mongodb_query(db, query_dict)
 
-                    query_dict = json.loads(generated_query)
-                    query_result = execute_mongodb_query(query_dict, config.MONGO_URI, config.MONGO_DB_NAME)
+                        if query_result['success']:
+                            if query_result['data']:
+                                try:
+                                    df_full = pd.DataFrame(query_result['data'])
+                                    st.session_state.df_to_display = df_full # Salva per la sezione persistente
+                                    st.session_state.show_last_query_results = True
 
-                    if query_result['success']:
-                        if query_result['data']:
-                            st.json(query_result['data'])
-                            assistant_response_parts.append(f"{success_message}\n```json\n{generated_query}\n```\n**Risultati:**\n{json.dumps(query_result['data'], indent=2)}")
-                        else:
-                            st.write("Nessun risultato trovato.")
-                            assistant_response_parts.append(f"{success_message}\n```json\n{generated_query}\n```\nNessun risultato trovato.")
+                                    display_limit = 20
+                                    displayed_rows = min(display_limit, len(df_full))
 
-                    else:
-                        st.error(f"Errore durante l'esecuzione della query: {query_result['error']}")
-                        assistant_response_parts.append(f"{success_message}\n```json\n{generated_query}\n```\n**Errore:**\n{query_result['error']}")
+                                except Exception as e_df:
+                                    err_format_msg = f"\n**Errore formattazione tabella:** {e_df}\n**Risultati (JSON):**\n```json\n{json.dumps(query_result['data'], indent=2, ensure_ascii=False)}\n```"
+                                    parts_for_history_and_immediate_display.append(err_format_msg)
+                            else: # No data
+                                parts_for_history_and_immediate_display.append("\nNessun risultato trovato.")
+                        else: # Query execution failed
+                            parts_for_history_and_immediate_display.append(f"\n**Errore Esecuzione:**\n{query_result['error']}")
+                    else: # DB instance is None
+                        parts_for_history_and_immediate_display.append("\n**Errore Esecuzione:** Connessione al database non disponibile.")
+            except json.JSONDecodeError as e:
+                parts_for_history_and_immediate_display.append(f"\n**Errore Parsing JSON (LLM Output):** {e}\nLLM Output:\n{generated_query}")
+            except Exception as e:
+                parts_for_history_and_immediate_display.append(f"\n**Errore Imprevisto:** {e}")
 
+        # Mostra il messaggio dell'assistente nella chat e salvalo nella history
+        if parts_for_history_and_immediate_display:
+            assistant_response_content = "\n".join(parts_for_history_and_immediate_display)
+            with st.chat_message("assistant"):
+                st.markdown(assistant_response_content, unsafe_allow_html=True)
+            st.session_state.messages.append({"role": "assistant", "content": assistant_response_content})
 
-                except Exception as e:
-                    st.error(f"Si è verificato un errore durante l'esecuzione della query: {e}")
-                    assistant_response_parts.append(f"Si è verificato un errore durante l'esecuzione della query: {e}")
+        # Se abbiamo risultati o contesto da mostrare nella sezione persistente, forziamo un rerun
+        # per farla apparire subito sotto la chat.
+        if st.session_state.show_last_query_results or st.session_state.context_to_display:
+            st.rerun()
 
-            if context:
-                with st.expander("Contesto RAG Utilizzato", expanded=False):
-                    st.markdown(context)
-                    assistant_response_parts.append(f"\n\n<details><summary>📚 Contesto RAG</summary><pre><code>{context}</code></pre></details>")
+    # ---- SEZIONE DI VISUALIZZAZIONE PERSISTENTE ----
+    # Questa sezione viene eseguita SEMPRE DOPO il blocco 'if prompt' (se c'è stato input)
+    # e dopo il loop dei messaggi, quindi ad ogni rerun.
 
-        st.session_state.messages.append({"role": "assistant", "content": "\n".join(assistant_response_parts)})
+    if st.session_state.get('df_to_display') is not None:
+        st.sidebar.write(f"DF empty: {st.session_state.df_to_display.empty}")
+
+    if st.session_state.show_last_query_results and st.session_state.df_to_display is not None:
+        st.markdown("---") # Separatore visivo
+
+        df_display = st.session_state.df_to_display
+        if not df_display.empty:
+            display_limit = 20
+            displayed_rows = min(display_limit, len(df_display))
+
+            st.write(f"Visualizzazione delle prime {displayed_rows} righe su {len(df_display)} totali:")
+            st.dataframe(df_display.head(display_limit))
+
+            csv_data = df_display.to_csv(index=False).encode('utf-8')
+            unique_download_key = f"download_csv_{len(df_display)}_{df_display.columns.tolist()}"
+
+            st.download_button(
+                label="📥 Scarica risultati completi (CSV)",
+                data=csv_data,
+                file_name=f"risultati_query_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                mime="text/csv",
+                key=unique_download_key
+            )
+        else:
+            st.info("L'ultima query è stata eseguita con successo ma non ha prodotto dati.")
+
+    if st.session_state.context_to_display:
+        with st.expander("Contesto RAG Utilizzato (dall'ultima query)", expanded=False):
+            st.markdown(st.session_state.context_to_display)
 
 elif app_mode == "Analitiche":
     st.sidebar.info("Visualizza le analitiche del tuo database. Le analitiche sono predefinite e non richiedono input da parte dell'utente.")

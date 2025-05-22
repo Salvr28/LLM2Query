@@ -18,7 +18,7 @@ def get_db_connection():
         print(f"Error connecting to MongoDB: {e}")
         return None
 
-# Analytics functions
+# ---------- Analytics functions --------------------------
 def get_distibuzione_sesso(db):
     if db is None:
         return pd.DataFrame(), "Connection to the database failed."
@@ -32,3 +32,56 @@ def get_distibuzione_sesso(db):
         return pd.DataFrame(result), None
     except Exception as e:
         return pd.DataFrame(), f"Error executing query sesso: {e}"
+    
+
+def get_distribuzione_comune_di_nascita(db):
+    if db is None:
+        return pd.DataFrame(), "Connection to the database failed."
+    pipeline = [
+        {"$match": {"COMUNE_DI_NASCITA": {"$ne": None, "$exists": True}}},
+        {"$group": {"_id":"$COMUNE_DI_NASCITA", "count":{"$sum": 1}}},
+        {"$project": {"Comune di nascita": "$_id", "Numero Pazienti": "$count", "_id": 0}},
+        {"$sort": {"Numero Pazienti": -1}},
+        {"$limit": 20}
+    ]
+    try:
+        result = list(db.ANAGRAFICA.aggregate(pipeline))
+        return pd.DataFrame(result), None
+    except Exception as e:
+        return pd.DataFrame(), f"Error executing query comune di nascita: {e}"
+    
+def get_principali_cause_decesso(db):
+    if db is None:
+        return pd.DataFrame(), "Connection to the database failed."
+    pipeline = [
+        {"$match": 
+            {
+            "DATA_DECESSO": {"$ne": None, "$exists": True},
+            "MOTIVO_DECESSO": {"$ne": None, "$exists": True}
+            }
+        },
+        {"$group": {"_id": "$MOTIVO_DECESSO", "count": {"$sum": 1}}},
+        {"$project": {"Motivo del decesso": "$_id", "Numero Pazienti deceduti": "$count", "_id": 0}},
+        {"$sort": {"Numero Pazienti deceduti": -1}},
+        {"$limit": 20}
+    ]
+    try:
+        result = list(db.ANAGRAFICA.aggregate(pipeline))
+        return pd.DataFrame(result), None
+    except Exception as e: 
+        return pd.DataFrame(), f"Error executing query motivi di decesso: {e}"
+    
+def get_pazienti_per_evento(db):
+    if db is None:
+        return pd.DataFrame(), "Connection to the database failed."
+    pipeline = [
+        {"$group": {"_id": "$TIPO_EVENTO", "count": {"$sum": 1}}},
+        {"$project": {"Tipo evento": "$_id", "Numero Pazienti": "$count", "_id": 0}},
+        {"$sort": {"Numero Pazienti": -1}}
+    ]
+    try:
+        result = list(db.LISTA_EVENTI.aggregate(pipeline))
+        return pd.DataFrame(result), None
+    except Exception as e: 
+        return pd.DataFrame(), f"Error executing query motivi di decesso: {e}"
+  

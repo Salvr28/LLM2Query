@@ -13,6 +13,7 @@ from query_executor import execute_mongodb_query
 import config
 import analytics_dashboard as ad
 from pymongo import MongoClient
+import matplotlib.pyplot as plt
 
 # ------ Critic Configuration ------
 if config.GOOGLE_API_KEY is None:
@@ -45,7 +46,7 @@ def init_db_connection():
 
 db = init_db_connection()
 
-# ----Streamlit Interface------
+# -----------------------------Streamlit Interface----------------------------------------------------
 st.title("QueryDoctor")
 
 # --- Menu Laterale ---
@@ -128,6 +129,10 @@ elif app_mode == "Analitiche":
             "--- Seleziona un'analitica ---",
             "Distribuzione Pazienti per Sesso",
             "Distribuzione Età",
+            "Distribuzione Pazienti per Comune di nascita",
+            "Principali Motivi di decesso",
+            "Numero Pazienti per Evento",
+            "Lista Eventi per un paziente"
         ]
 
         chosen_analytics = st.selectbox("Seleziona un'analitica", analytics_options)
@@ -143,5 +148,68 @@ elif app_mode == "Analitiche":
                     st.bar_chart(data_df.set_index('Sesso'))
             else: st.info("Nessun dato disponibile per questa analisi.")
 
+        elif chosen_analytics == "Distribuzione Pazienti per Comune di nascita":
+            data_df, error = ad.get_distribuzione_comune_di_nascita(db)
+            if error: 
+                st.error(error)
+            elif not data_df.empty:
+                st.subheader("Distribuzione Pazienti per Comune di nascita")
+                st.dataframe(data_df)
+                if "Comune di nascita" in data_df.columns and "Numero Pazienti" in data_df.columns:
+                    st.bar_chart(data_df.set_index("Comune di nascita"))
+            else:
+                st.info("Nessun dato disponibile per questa analisi") 
+
         elif chosen_analytics == "Distribuzione Età":
             pass
+
+        elif chosen_analytics == "Principali Motivi di decesso":
+            data_df, error = ad.get_principali_cause_decesso(db)
+            if error:
+                st.error(error)
+            elif not data_df.empty:
+                st.subheader("Principali Motivi di decesso")
+                st.dataframe(data_df)
+                if "Motivo del decesso" in data_df.columns and "Numero Pazienti deceduti" in data_df.columns:
+
+                    fig, ax = plt.subplots(figsize=(10,6))
+                    ax.barh(data_df["Motivo del decesso"], data_df["Numero Pazienti deceduti"], color="skyblue")
+                    ax.invert_yaxis()
+
+                    ax.set_xlabel("Numero Pazienti deceduti")
+                    ax.set_ylabel("Motivo del decesso")
+                    ax.set_title("Principali Motivi di decesso")
+
+                    plt.tight_layout()
+                    st.pyplot(fig)
+
+            else:
+                st.info("Nessun dato disponibile per questa analisi")
+
+        elif chosen_analytics == "Numero Pazienti per Evento":
+            data_df, error = ad.get_pazienti_per_evento(db)
+            if error:
+                st.error(error)
+            elif not data_df.empty:
+                st.subheader("Numero Pazienti per evento")
+                st.dataframe(data_df)
+                if "Tipo evento" in data_df.columns and "Numero Pazienti" in data_df.columns:
+
+                    fig, ax = plt.subplots(figsize=(10,6))
+                    ax.barh(data_df["Tipo evento"], data_df["Numero Pazienti"], color="green")
+                    ax.invert_yaxis()
+
+                    ax.set_xlabel("Numero Pazienti")
+                    ax.set_ylabel("Tipo evento")
+                    ax.set_title("Numero pazienti per evento")
+
+                    plt.tight_layout()
+                    st.pyplot(fig)
+
+            else:
+                st.info("Nessun dato disponibile per questa analisi")
+        
+        elif chosen_analytics == "Lista Eventi per un paziente":
+            pass
+
+        

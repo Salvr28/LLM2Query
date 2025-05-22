@@ -210,6 +210,10 @@ elif app_mode == "Analitiche":
                 st.info("Nessun dato disponibile per questa analisi")
         
         elif chosen_analytics == "Lista Eventi per un paziente":
-            pass
+            fiscal_code_input = st.text_input("Inserisci il Codice Fiscale del Paziente:", key="fiscal_code_search")
+
+            if st.button("Cerca Paziente"):
+                if fiscal_code_input:
+                    pass
 
         

@@ -84,4 +84,12 @@ def get_pazienti_per_evento(db):
         return pd.DataFrame(result), None
     except Exception as e: 
         return pd.DataFrame(), f"Error executing query motivi di decesso: {e}"
+    
+def get_lista_eventi_con_codice_fiscale(db, fiscal_code: str):
+    if db is None:
+        return pd.DataFrame(), "Connection to the database failed"
+    elif fiscal_code is None:
+        return pd.DataFrame(), "Invalid fiscal code"
+    
+    ### DA FINIRE ####
   

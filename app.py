@@ -43,7 +43,7 @@ def init_db_connection():
 
 db = init_db_connection()
 
-# -----------------------------Streamlit Interface----------------------------------------------------
+# ----------------------------- Streamlit Interface ----------------------------------------------------
 st.title("QueryDoctor")
 
 # --- Session State for correctness ---
@@ -60,13 +60,14 @@ if "show_last_query_results" not in st.session_state:
 st.sidebar.title("Menu Navigazione")
 app_mode = st.sidebar.selectbox(
     "Seleziona la modalità",
-    ["Assistente", "Analitiche"]
+    ["Assistente", "Analitiche", "Cartella Clinica Paziente"]
 )
 
 if app_mode == "Assistente":
     st.sidebar.info("Chiedi qualsiasi cosa riguardo il tuo database. L'assistente cercherà di interpretare i tuoi bisogni e di fornirti un risultato adeguato.")
     st.header("Assistente")
 
+    # Visualize all messages in session state
     for msg_idx, message in enumerate(st.session_state.messages):
         with st.chat_message(message["role"]):
             st.markdown(message["content"], unsafe_allow_html=True)
@@ -188,8 +189,7 @@ elif app_mode == "Analitiche":
             "Distribuzione Età",
             "Distribuzione Pazienti per Comune di nascita",
             "Principali Motivi di decesso",
-            "Numero Pazienti per Evento",
-            "Lista Eventi per un paziente"
+            "Numero Pazienti per Evento"
         ]
 
         chosen_analytics = st.selectbox("Seleziona un'analitica", analytics_options)
@@ -266,11 +266,59 @@ elif app_mode == "Analitiche":
             else:
                 st.info("Nessun dato disponibile per questa analisi")
         
-        elif chosen_analytics == "Lista Eventi per un paziente":
-            fiscal_code_input = st.text_input("Inserisci il Codice Fiscale del Paziente:", key="fiscal_code_search")
+
+elif app_mode == "Cartella Clinica Paziente":
+    st.sidebar.info("Qui puoi cercare un paziente per codice fiscale o codice paziente e sezione. Potrai ottenere la cartella clinica digitale del paziente.")
+    st.header("Cartella Clinica Paziente")
+
+    if db is None:
+        st.error(f"Impossibile connettersi al database. Controlla la configurazione.")
+    else:
+
+        type_of_search = st.radio("Scegli la modalità di ricerca:",                       
+            ("Codice Fiscale", "Codice Paziente + Sezione")
+        )
+
+        research_data = {}
+        exec_research = False
+        if type_of_search == "Codice Fiscale":
+
+            fiscal_code = st.text_input("Inserisci il codice fiscale del paziente.")
+            if st.button("Cerca il Paziente"):
+                if fiscal_code:
+                    research_data = {"type": "fiscal_code", "value": fiscal_code}
+                    exec_research = True
+                else: 
+                    st.warning("Per favore, inserisci il codice fiscale.")
+
+        elif type_of_search == "Codice Paziente + Sezione":
+
+            col1, col2 = st.columns(2)
+            with col1:
+                patient_code = st.text_input("Inserisci il codice del paziente.")
+            with col2:
+                patient_section = st.text_input("Inserisci la sezione del paziente.")
 
             if st.button("Cerca Paziente"):
-                if fiscal_code_input:
-                    pass
+                if patient_code and patient_section:
+                    research_data = {
+                        "type": "code_section",
+                        "code": patient_code,
+                        "section": patient_section    
+                    }
+                    exec_research = True
+                else:
+                    st.warning("Per favore, inserire codice paziente e sezione.")
+            
+        if exec_research:
+            st.success(f"Dati per la ricerca: {research_data}")
+            data_df, error = ad.get_lista_eventi(db, research_data)
+            if error: 
+                st.error(error)
+            elif not data_df.empty:
+                st.subheader("Lista eventi del paziente")
+                st.dataframe(data_df)
+            else:
+                st.info("Nessun dato disponibile per questa analisi")
 
         

@@ -99,15 +99,15 @@ class MongoDBQueryGenerator:
                 {{
                     "$lookup": {{
                         "from": "RICOVERO_OSPEDALIERO",
-                        "localField": "CODPAZ",
-                        "foreignField": "CODPAZ",
+                        "localField": "ID_PAZ",
+                        "foreignField": "ID_PAZ",
                         "as": "info_ricoveri"
                     }}
                 }},
                 {{
                     "$project": {{
                         "_id": 0,
-                        "codice_paziente_anamnesi": "$CODPAZ",
+                        "id_paziente_anamnesi": "$ID_PAZ",
                         "date_ricoveri_ospedalieri": "$info_ricoveri.DATA"
                     }}
                 }}

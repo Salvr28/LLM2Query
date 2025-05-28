@@ -85,11 +85,75 @@ def get_pazienti_per_evento(db):
     except Exception as e: 
         return pd.DataFrame(), f"Error executing query motivi di decesso: {e}"
     
-def get_lista_eventi_con_codice_fiscale(db, fiscal_code: str):
+# ------- Functions for medical records ---------------     
+def get_lista_eventi(db, search_data: dict):
     if db is None:
         return pd.DataFrame(), "Connection to the database failed"
-    elif fiscal_code is None:
-        return pd.DataFrame(), "Invalid fiscal code"
-    
-    ### DA FINIRE ####
-  
+    elif search_data is None:
+        return pd.DataFrame(), "Invalid data to find the patient"
+    else:
+
+        # Inizializza la fase di match specifica
+        match_stage = {}
+
+        if search_data["type"] == "fiscal_code":
+            match_stage = {"$match": {"CODICE_FISCALE": search_data["value"]}}
+        elif search_data["type"] == 'code_section':
+            id_paz = str(search_data['section']) + "_" + str(search_data['code'])
+            match_stage = {"$match": {"ID_PAZ": id_paz}}
+        else:
+            return pd.DataFrame(), "Tipo di ricerca non valido."
+
+        common_pipeline = [
+            {"$project": {"ID_PAZ": 1, "_id": 0}},
+            {"$lookup": {
+                "from": "LISTA_EVENTI",          
+                "localField": "ID_PAZ",          
+                "foreignField": "ID_PAZ",        
+                "as": "associated_events"        
+            }},
+            {"$unwind": "$associated_events"},
+            {"$replaceRoot": {"newRoot": "$associated_events"}},
+            {"$project": {
+                "Id Paziente": "$ID_PAZ",        
+                "Codice paziente": "$CODPAZ",    
+                "Tipo evento": "$TIPO_EVENTO",   
+                "Data evento": "$DATA",          
+                "_id": 0                         
+            }}
+        ]
+
+        pipeline = [match_stage] + common_pipeline
+
+        try:
+            result = list(db.ANAGRAFICA.aggregate(pipeline))
+
+            if not result:
+                return pd.DataFrame(), f"Nessun evento trovato per i dati inseriti"
+            return pd.DataFrame(result), None
+        except Exception as e:
+            return pd.DataFrame(), f"Error during query event_list"
+
+def get_most_worth_from_anamnesi(db, search_data: dict):
+    if db is None:
+        return pd.DataFrame(), "Connection to the database failed"
+    elif search_data is None:
+        return pd.DataFrame(), "Invalid data to find the patient"
+    else:
+
+        match_stage = {}
+
+        if search_data["type"] == "fiscal_code":
+            match_stage = {"$match": {"CODICE_FISCALE": search_data["value"]}}
+        elif search_data["type"] == 'code_section':
+            id_paz = str(search_data['section']) + "_" + str(search_data['code'])
+            match_stage = {"$match": {"ID_PAZ": id_paz}}
+        else:
+            return pd.DataFrame(), "Tipo di ricerca non valido."
+        
+
+        common_pipeline = [
+
+        ]
+
+        pass

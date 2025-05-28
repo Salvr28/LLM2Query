@@ -10,6 +10,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODICE_FISCALE": 1
                     }
                 },
@@ -35,6 +40,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -85,6 +93,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -109,6 +122,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -183,6 +199,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -207,6 +228,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -251,6 +275,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -275,6 +304,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -424,6 +456,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -448,6 +485,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -534,6 +574,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -558,6 +603,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -659,6 +707,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -683,6 +736,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -724,6 +780,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -748,6 +809,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -783,6 +847,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -807,6 +876,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -839,6 +911,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -853,6 +930,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -999,6 +1079,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -1023,6 +1108,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -1064,6 +1152,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -1088,6 +1181,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -1216,6 +1312,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -1240,6 +1341,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"

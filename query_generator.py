@@ -37,7 +37,7 @@ class MongoDBQueryGenerator:
         `{{"error_type": "irrelevant_request", "message": "Posso solo generare query MongoDB basate sullo schema e sul contesto forniti. Per favore, fai una domanda relativa all'interrogazione del database clinico."}}`
         IMPORTANT: For any filter values associated with the fields "COGNOME", "NOMEPAZ", or "COMUNE_DI_NASCITA", ensure the string value is in UPPERCASE. For example, if the user asks for "Rossi", the filter should be "COGNOME": "ROSSI".
         IMPORTANT: For any date values, ensure the format is "YYYY-MM-DDT00:00:00.000+00:00" (e.g., "2023-01-01T00:00:00.000+00:00"). This is crucial for date comparisons in MongoDB queries.
-        
+
         Details for valid MongoDB query JSON:
         The JSON object MUST have the following top-level keys:
         - "collection_name": (string) The name of the MongoDB collection.
@@ -210,8 +210,6 @@ class MongoDBQueryGenerator:
         """
         text = text.strip()
         # Regex per catturare il contenuto all'interno di ```json ... ``` o ``` ... ```
-        # Gestisce un identificatore di linguaggio opzionale e newline opzionali attorno al contenuto.
-        # [\s\S] corrisponde a qualsiasi carattere, inclusi i newline. *? è non-greedy.
         match = re.match(r"^\s*```(?:[a-zA-Z0-9]+)?\s*([\s\S]*?)\s*```\s*$", text)
         if match:
             # Se è stato trovato un blocco markdown, restituisce il contenuto catturato
@@ -219,7 +217,7 @@ class MongoDBQueryGenerator:
         else:
             # Se nessun blocco markdown è rilevato, restituisce il testo originale (dopo strip)
             return text
-        
+
 
 
 

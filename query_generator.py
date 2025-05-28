@@ -46,6 +46,7 @@ class MongoDBQueryGenerator:
         - For "find" operations, "arguments" MUST contain:
             - "filter": (object) The MongoDB filter document.
             - "projection": (object, optional) The MongoDB projection document.
+            **IMPORTANT FOR "find" with "$in": The "$in" operator expects a list of concrete values. Do NOT use sub-queries, $aggregate, or other complex expressions to dynamically generate the array for "$in" directly within the "find" operation's filter. If you need to filter based on results from another collection, construct an "aggregate" pipeline using "$lookup" and subsequent "$match" stages.**
         - For "aggregate" operations, "arguments" MUST contain:
             - "pipeline": (array) An array of MongoDB aggregation pipeline stages.
 

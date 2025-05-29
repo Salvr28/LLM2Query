@@ -60,9 +60,10 @@ except json.JSONDecodeError:
 
 # ------ MongoDB URI ------
 MONGO_DB_NAME = "CAMPANIA_SALUTE"
-#MONGO_URI_KEY = 'MONGO_BASE_URI'
-MONGO_URI_KEY = 'MONGO_M10_URI'
+MONGO_URI_KEY = 'MONGO_BASE_URI'
+#MONGO_URI_KEY = 'MONGO_M10_URI'
 MONGO_URI = secrets.get(MONGO_URI_KEY)
 
 if not MONGO_URI:
     print(f"[MONGO URI Error]: Key {MONGO_URI_KEY} not found in {SECRETS_FILE}")
+

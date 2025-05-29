@@ -312,12 +312,30 @@ elif app_mode == "Cartella Clinica Paziente":
             
         if exec_research:
             st.success(f"Dati per la ricerca: {research_data}")
-            data_df, error = ad.get_lista_eventi(db, research_data)
+
+            # Doing all queries for the clinical record
+            events_list_df, error = ad.get_lista_eventi(db, research_data)
+
             if error: 
                 st.error(error)
-            elif not data_df.empty:
+            elif not events_list_df.empty:
                 st.subheader("Lista eventi del paziente")
-                st.dataframe(data_df)
+                st.dataframe(events_list_df)
+
+                # Check if there is an anamnesi event to do other queries
+                if events_list_df["Tipo evento"].isin(['ANAMNESI']).any():
+
+                    # Get patient id to easier queries
+                    patient_id = events_list_df["Id Paziente"].iloc[0]
+
+                    last_anamnesi_date_df, error = ad.get_last_anamnesi_data(db, patient_id)
+                    last_date = last_anamnesi_date_df["Data evento"].iloc[0]
+
+                    values_anamnesi_df, error = ad.get_most_worth_from_anamnesi(db, patient_id, last_date)
+                    st.subheader("Ultima Anamnesi del Paziente")
+                    st.dataframe(values_anamnesi_df)
+
+
             else:
                 st.info("Nessun dato disponibile per questa analisi")
 

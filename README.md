@@ -39,7 +39,7 @@ This flow describes how users can access and interact with pre-defined analytica
 ## 4. BenchMark Test
 To rigorously evaluate the performance and accuracy of our LLM2Query system, we conducted a comprehensive benchmark using a set of curated natural language queries. Our primary goal was to assess the system's ability to accurately translate complex medical requests into executable MongoDB queries and retrieve the correct patient data, particularly highlighting the impact of the Retrieval Augmented Generation (RAG) approach.
 
-### 3.1 Methodology
+### 4.1 Methodology
 Our benchmark methodology is designed to provide a clear comparison between the system's output and a "gold standard" of human-generated, correct results. Wwe manually crafted the ground truth MongoDB queries and executed them against our dataset to obtain the "gold standard" result set. This represents the ideal outcome for each query.
 
 * We compiled a test set consisting of 30 distinct natural language queries relevant to cardiological data, simulating real-world requests from physicians.
@@ -47,15 +47,65 @@ Our benchmark methodology is designed to provide a clear comparison between the 
     * 10 Medium Queries
     * 10 Difficult Queriez
 
-### 3.2 System Evaluation
+### 4.2 System Evaluation
 * We ran each of the 30 natural language queries through our LLM2Query system under two configurations:
   * With RAG: The system leverages the Retrieval Augmented Generation approach to enrich the LLM's context for query generation.
   * Without RAG: The system relies solely on the LLM's inherent knowledge for query generation, without the additional context provided by RAG.
 
-### 3.3 Metric Calculation
+### 4.3 Metric Calculation
 * We used a custom Python script to compare the system-generated result sets (both with and without RAG) against the gold standard result set.
 * The script calculates several key metrics to quantify performance:
     * Precision: TP/(TP+FP) - Measures the proportion of relevant IDs among the retrieved IDs.
     * Recall: TP/(TP+FN) - Measures the proportion of relevant IDs that were successfully retrieved out of the total relevant IDs.
     * F1 Score: 2∗(Precision∗Recall)/(Precision+Recall) - The harmonic mean of Precision and Recall, providing a single score that balances both.
     * Jaccard Index: TP/(TP+FP+FN) - Measures the similarity between the predicted and gold standard sets.
+
+## 5. Visual Demo
+
+## 6. Installation guide 
+This guide will walk you through the steps required to set up and run the LLM2Query prototype on your local machine. Please note that due to the sensitive nature of our primary dataset, you will need to prepare your own test data.
+
+### 6.1 Prerequisites
+Before you begin, ensure you have the following:
+
+* Git installed.
+* MongoDB Atlas Account: A free-tier cluster is sufficient. You will need your cluster's connection URI, in the website [MongoDB Atlas](https://www.mongodb.com/it-it/atlas?msockid=2ef09abe795160c13ec18e38788c61da).
+* LLM API Key: An API key for Google Gemini (recommended) or any other large language model service you intend to use.
+
+### 6.2 Setup Steps
+Follow these steps to get the project up and running:
+
+#### 6.2.1 Prepare Your Data
+As our original dataset contains sensitive information, you will need to create your own for testing purposes.
+
+* Develop a CSV file containing your trial patient data. Ensure it includes fields relevant to cardiological scenarios (e.g., patient ID, age, gender, diagnoses, lab results).
+* Create a separate set of document files (e.g., text files or markdown files) that describe the schema of your dataset. Each document should detail a specific table/collection or a set of fields within your CSV, explaining their meaning and relationships. These documents will be used for Retrieval Augmented Generation (RAG).
+
+#### 6.2.2 Configure a secret.json file
+Create a file named `secret.json` in the root directory of your project. This file will store sensitive information and should not be committed to your version control (e.g., Git).
+
+The structure should resemble the following, with your specific details:
+```json
+{
+  "MONGO_BASE_URI": "mongodb+srv://<username>:<password>@<cluster-url>/<database-name>?retryWrites=true&w=majority",
+  "GOOGLE_API_KEY": "YOUR_GEMINI_API_KEY",
+  "COLLECTION_STRING_LIST":[
+   "PATIENTS_DATA",
+   "EVENT_LIST",
+   "RECOVERY",
+  ]
+}
+```
+Replace placeholder values with your actual credentials and names.
+
+#### 6.2.3 Preprocess Data and Generate Embeddings
+Navigate to the `preprocessing` directory within the repository. You will use the provided Jupyter notebooks (preferably in a Colab environment due to computational requirements for embeddings) to prepare your data.
+
+* Data Cleaning and MongoDB Upload Notebook:
+   * Open and run the notebook dedicated to cleaning your CSV data and uploading it to your MongoDB Atlas cluster. This notebook will handle the initial data pipeline.
+* Embedding Generation Notebook:
+   * Open and run the notebook designed for creating embeddings from your dataset description documents. These embeddings are crucial for the RAG component to function effectively. The embeddings will be stored in your specified MongoDB collection.
+
+
+
+

@@ -16,9 +16,11 @@ Our solution is built upon a **modular and scalable architecture**, designed to 
 ![Prototype Architecture](images/LLM2Query_Architecture.png)
 
 🟠 Orange Flow: Data Preprocessing and Ingestion
+
 This flow represents the initial stage of data preparation and ingestion. Raw medical data is rigorously preprocessed using PySpark for cleaning, transformation, and standardization. The refined dataset is then efficiently loaded into our MongoDB database, forming the foundation for all subsequent queries.
 
 🔵 Cyan Flow: Natural Language Query Processing
+
 This flow outlines how user natural language queries are transformed into executable MongoDB queries.
 
 * Query Embedding & Retrieval: The user's natural language query is converted into embeddings. These embeddings are then used to retrieve the most relevant dataset descriptions (documents containing schema and data context) from our knowledge base.
@@ -26,6 +28,7 @@ This flow outlines how user natural language queries are transformed into execut
 * Query Validation & Execution: The generated query undergoes a validation check by our query engine before being executed on the MongoDB database to retrieve the desired results.
 
 🔴 Red Flow: Pre-built Analytics and User Interaction
+
 This flow describes how users can access and interact with pre-defined analytical views within the system.
 
 * User Selection: Through a Streamlit interface, users can select various pre-built analytical options.

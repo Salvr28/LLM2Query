@@ -5,12 +5,14 @@ st.set_page_config(layout="wide")
 import json
 import pandas as pd
 from datetime import datetime
-from query_generator import MongoDBQueryGenerator
-from query_executor import execute_mongodb_query
+from src.query_engine.query_generator import MongoDBQueryGenerator
+from src.query_engine.query_executor import execute_mongodb_query
 import config
-import analytics_dashboard as ad
+import src.app.analytics_dashboard as ad
 from pymongo import MongoClient
 import matplotlib.pyplot as plt
+import squarify
+import os
 
 # ------ Critic Configuration ------
 if config.GOOGLE_API_KEY is None:
@@ -186,10 +188,11 @@ elif app_mode == "Analitiche":
         analytics_options = [
             "--- Seleziona un'analitica ---",
             "Distribuzione Pazienti per Sesso",
-            "Distribuzione Età",
+            "Casi di Scompensi cardiaci per anno",
             "Distribuzione Pazienti per Comune di nascita",
             "Principali Motivi di decesso",
-            "Numero Pazienti per Evento"
+            "Numero Pazienti per Evento",
+            "Lesioni coronografiche"
         ]
 
         chosen_analytics = st.selectbox("Seleziona un'analitica", analytics_options)
@@ -217,8 +220,33 @@ elif app_mode == "Analitiche":
             else:
                 st.info("Nessun dato disponibile per questa analisi") 
 
-        elif chosen_analytics == "Distribuzione Età":
-            pass
+        elif chosen_analytics == "Casi di Scompensi cardiaci per anno":
+            data_df, error = ad.get_heart_failure_by_year(db)
+            if error:
+                st.error(error)
+            elif not data_df.empty: 
+                st.subheader("Numero di Casi di Heart Failure per Anno")
+                st.dataframe(data_df)
+
+                if "Anno" in data_df.columns and "Numero Casi" in data_df.columns:
+                    fig, ax = plt.subplots(figsize=(12,6))
+                    ax.plot(data_df["Anno"], data_df["Numero Casi"], marker='o', linestyle='-', color='purple')
+
+                    ax.set_xlabel("Anno", fontsize=12)
+                    ax.set_ylabel("Numero Casi", fontsize=12)
+                    ax.set_title("Andamente Annuale dei Casi di Scompenso cardiaco", fontsize=14)
+                    ax.grid(True, linestyle='--', alpha=0.7)
+
+                    ax.set_xticks(data_df["Anno"].astype(int))
+                    ax.tick_params(axis='x', rotation=45)
+
+                    plt.tight_layout()
+                    st.pyplot(fig)
+                else: 
+                    st.warning("Le colonne 'Anno' o 'Numero Casi' non sono state trovate nei dati. Verifica la query MongoDB e le intestazioni.")
+            else: 
+                st.info("Nessun dato disponibile per l'analisi dei casi di Heart Failure per anno.")
+
 
         elif chosen_analytics == "Principali Motivi di decesso":
             data_df, error = ad.get_principali_cause_decesso(db)
@@ -265,7 +293,75 @@ elif app_mode == "Analitiche":
 
             else:
                 st.info("Nessun dato disponibile per questa analisi")
-        
+
+        elif chosen_analytics == "Lesioni coronografiche":
+            current_dir = os.path.dirname(__file__) 
+            csv_file_path = os.path.join(current_dir, "..", "evaluation", "gold_results", "results_query_n18.csv")
+
+            try:
+                temp_df = pd.read_csv(csv_file_path) 
+                error = None
+
+                # Data transformation for treemap
+                if not temp_df.empty:
+
+                    lesion_columns = ['LESIONI_TC', 'LESIONI_IVA', 'LESIONI_CX', 'LESIONI_DX']
+
+
+                    if all(col in temp_df.columns for col in lesion_columns):
+
+                        data_for_treemap = {
+                            "Tipo Lesione": [],
+                            "Numero Pazienti": []
+                        }
+                        for col in lesion_columns:
+                            data_for_treemap["Tipo Lesione"].append(col)
+                            data_for_treemap["Numero Pazienti"].append(temp_df[col].iloc[0]) 
+
+                        data_df = pd.DataFrame(data_for_treemap)
+                    else:
+                        st.error("Il file CSV non contiene tutte le colonne di lesione attese (LESIONI_TC, LESIONI_IVA, LESIONI_CX, LESIONI_DX).")
+                        data_df = pd.DataFrame() 
+                else:
+                    data_df = pd.DataFrame() 
+
+
+            except FileNotFoundError:
+                data_df = pd.DataFrame() 
+                error = f"Il file '{csv_file_path}' non è stato trovato. Assicurati che il percorso sia corretto."
+            except Exception as e:
+                data_df = pd.DataFrame()
+                error = f"Si è verificato un errore durante il caricamento o la trasformazione del file CSV: {e}"
+
+            if error:
+                st.error(error)
+            elif not data_df.empty:
+                st.subheader("Conteggio Pazienti per Tipo di Lesione (Treemap)") 
+
+
+                if "Tipo Lesione" in data_df.columns and "Numero Pazienti" in data_df.columns:
+                    fig, ax = plt.subplots(figsize=(12, 7))
+
+
+                    labels = [f"{row['Tipo Lesione']}\n({row['Numero Pazienti']})" 
+                                for index, row in data_df.iterrows()]
+
+                    squarify.plot(sizes=data_df["Numero Pazienti"], 
+                                    label=labels, 
+                                    alpha=0.8, 
+                                    ax=ax,
+                                    pad=True, 
+                                    text_kwargs={'fontsize': 10, 'color': 'white'})
+
+                    ax.set_title("Numero Pazienti per Tipo di Lesione", fontsize=16)
+                    plt.axis('off') 
+                    plt.tight_layout()
+                    st.pyplot(fig)
+                else:
+                    st.warning("Errore interno: Le colonne 'Tipo Lesione' o 'Numero Pazienti' non sono state create correttamente.")
+            else:
+                st.info("Nessun dato disponibile per le lesioni.")
+                
 
 elif app_mode == "Cartella Clinica Paziente":
     st.sidebar.info("Qui puoi cercare un paziente per codice fiscale o codice paziente e sezione. Potrai ottenere la cartella clinica digitale del paziente.")

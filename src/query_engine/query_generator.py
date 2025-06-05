@@ -56,8 +56,6 @@ class MongoDBQueryGenerator:
         MongoDB Schema:
         {self.db_schema}
 
-        Retrieved Context (for informational purposes, use the schema for exact field names and structure):
-        {context}
 
         Examples of desired JSON output:
         Instruct: "Mostrami tutti i pazienti nati dopo il 1940, visualizzando nome e data di nascita."

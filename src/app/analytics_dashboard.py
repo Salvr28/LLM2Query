@@ -84,7 +84,34 @@ def get_pazienti_per_evento(db):
         return pd.DataFrame(result), None
     except Exception as e: 
         return pd.DataFrame(), f"Error executing query motivi di decesso: {e}"
-    
+
+def get_heart_failure_by_year(db):
+
+    pipeline = [
+        {"$match": {
+            "HEART_FAILURE": "YES"    
+        }},
+        {"$group": {
+            "_id" : {"$year": "$DATA"},
+            "count": {"$sum": 1}    
+        }},
+        {"$project": {
+            "Anno": "$_id",
+            "Numero Casi": "$count",
+            "_id": 0    
+        }},
+        {"$sort": {
+            "Anno": 1    
+        }}    
+    ]
+
+    try:
+        result = list(db.ECOCARDIO_DATI.aggregate(pipeline))
+        return pd.DataFrame(result), None
+    except Exception as e: 
+        return pd.DataFrame(), f"Error executing query motivi di decesso: {e}"
+
+
 # ------- Functions for medical records ---------------     
 def get_lista_eventi(db, search_data: dict):
     if db is None:

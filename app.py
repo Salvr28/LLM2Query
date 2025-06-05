@@ -1,9 +1,7 @@
 import streamlit as st
-
-st.set_page_config(layout="wide")
-
 import json
 import pandas as pd
+import logging
 from datetime import datetime
 from src.query_engine.query_generator import MongoDBQueryGenerator
 from src.query_engine.query_executor import execute_mongodb_query
@@ -12,17 +10,45 @@ import src.app.analytics_dashboard as ad
 from pymongo import MongoClient
 import matplotlib.pyplot as plt
 import squarify
+import re
 import os
+
+# ---- Logger Configuration ----
+logger = logging.getLogger('QueryDelCuoreApp')
+logger.setLevel(logging.DEBUG)
+
+log_dir = "logs"
+log_file_path = os.path.join(log_dir, "app_activity.log")
+os.makedirs(log_dir, exist_ok=True)
+
+fh = logging.FileHandler(log_file_path, encoding='utf-8')
+fh.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+
+if not logger.handlers:
+    logger.addHandler(fh)
+
+# ---- Streamlit Page Configuration ----
+st.set_page_config(
+    layout="wide",
+    page_title="QueryDelCuore",
+    page_icon="assets/query_cuore_logo.png",
+    initial_sidebar_state="expanded"
+)
 
 # ------ Critic Configuration ------
 if config.GOOGLE_API_KEY is None:
     st.error('GOOGLE API Key not configured correctly in config module')
+    logger.critical('GOOGLE API Key not configured')
     st.stop()
 if config.DB_SCHEMA is None:
     st.error('MongoDB Schema not loaded correctly from config module')
+    logger.critical('MongoDB Schema not loaded')
     st.stop()
 if config.MONGO_URI is None:
     st.error('MongoDB URI not configured correctly in config module')
+    logger.critical('MongoDB URI not configured')
     st.stop()
 
 # ------ Streamlit App Tools ------
@@ -41,30 +67,58 @@ def init_db_connection():
         return client[config.MONGO_DB_NAME]
     except Exception as e:
         st.error(f"Errore di connessione al database: {e}")
+        logger.error(f"Errore di connessione al database: {e}", exc_info=True)
         return None
 
 db = init_db_connection()
 
+#  Function to extract document names from RAG context
+def extract_doc_names_from_rag_context(rag_context):
+    if not rag_context:
+        return []
+    doc_names = []
+    try:
+        if isinstance(rag_context, str):
+            logger.debug("DEBUG: rag_context_data È una stringa. Tentativo di parsing di tutti i nomi.")
+
+            # Trova tutte le corrispondenze del pattern nella stringa concatenata
+            # Pattern: cerca "# Tabella: NOME", "## Collezione: NOME", o "## Documento: NOME" all'inizio di una riga
+            # [\w\s.-]+ cattura il nome (caratteri alfanumerici, spazi, punti, trattini)
+            matches = re.findall(r"^(?:# Tabella:|## Collezione:|## Documento:)\s*([\w\s.-]+)", rag_context, re.IGNORECASE | re.MULTILINE)
+
+            if matches:
+                for extracted_name in matches:
+                    doc_names.append(extracted_name.strip())
+                logger.info(f"Nomi documenti/tabelle estratti dal contesto RAG (stringa): {', '.join(doc_names)}")
+            else:
+                logger.warning("Contesto RAG è una stringa, ma pattern nomi non trovato. Uso un placeholder.")
+                doc_names.append(f"Contesto Testuale (Inizio: '{rag_context[:50].strip().replace(chr(10), ' ')}...')")
+            return doc_names
+    except Exception as e:
+        return ["Errore estrazione nomi documenti"]
+
 # ----------------------------- Streamlit Interface ----------------------------------------------------
-st.title("QueryDoctor")
+st.title("LLM2Query")
 
 # --- Session State for correctness ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "df_to_display" not in st.session_state:
     st.session_state.df_to_display = None
-if "context_to_display" not in st.session_state:
-    st.session_state.context_to_display = None
+#if "context_to_display" not in st.session_state:
+#    st.session_state.context_to_display = None
 if "show_last_query_results" not in st.session_state:
     st.session_state.show_last_query_results = False
 
-# --- Menu Laterale ---
+# --- Side Menu ---
+st.sidebar.image("assets/query_cuore_logo.jpg", width=250)
 st.sidebar.title("Menu Navigazione")
 app_mode = st.sidebar.selectbox(
     "Seleziona la modalità",
     ["Assistente", "Analitiche", "Cartella Clinica Paziente"]
 )
 
+# --- Assistant mode ---
 if app_mode == "Assistente":
     st.sidebar.info("Chiedi qualsiasi cosa riguardo il tuo database. L'assistente cercherà di interpretare i tuoi bisogni e di fornirti un risultato adeguato.")
     st.header("Assistente")
@@ -77,10 +131,10 @@ if app_mode == "Assistente":
     if prompt := st.chat_input("Chiedimi qualcosa..."):
         st.chat_message("user").markdown(prompt)
         st.session_state.messages.append({"role": "user", "content": prompt})
+        logger.info(f"Nuovo prompt dall'utente: {prompt}")
 
-        # Reset dello stato per i nuovi risultati che verranno visualizzati dalla sezione persistente
+        # Reset status for new results to be displayed by the persistent section
         st.session_state.df_to_display = None
-        st.session_state.context_to_display = None
         st.session_state.show_last_query_results = False
 
         parts_for_history_and_immediate_display = []
@@ -89,13 +143,16 @@ if app_mode == "Assistente":
             generated_query, error_message, context = query_generator.generate_query(prompt)
 
         if context:
-            st.session_state.context_to_display = context # Salva per la sezione persistente
+            doc_names = extract_doc_names_from_rag_context(context)
+            logger.info(f"Documenti utilizzati dal contesto RAG: {', '.join(doc_names)}")
 
         if error_message:
             error_display_text = f"Si è verificato un errore persistente nella generazione della query:\n```text\n{error_message}\n```"
             parts_for_history_and_immediate_display.append(error_display_text)
+            logger.error(f"Errore generazione query: {error_message}")
         elif generated_query:
-            query_json_for_history = f"**Query JSON generata con successo:**\n```json\n{generated_query}\n```"
+            logger.info(f"Query JSON generata: {generated_query}")
+            query_json_for_history = f"**Query JSON generata con successo.** (Dettagli registrati nel file di log)."
             parts_for_history_and_immediate_display.append(query_json_for_history)
             try:
                 query_dict = json.loads(generated_query)
@@ -105,9 +162,11 @@ if app_mode == "Assistente":
                 else:
                     if db is not None:
                         with st.spinner("Esecuzione della query..."):
+                            logger.info(f"Esecuzione query: {json.dumps(query_dict)}")
                             query_result = execute_mongodb_query(db, query_dict)
 
                         if query_result['success']:
+                            logger.info("Esecuzione query riuscita.")
                             if query_result['data']:
                                 try:
                                     df_full = pd.DataFrame(query_result['data'])
@@ -122,6 +181,7 @@ if app_mode == "Assistente":
                                     parts_for_history_and_immediate_display.append(err_format_msg)
                             else: # No data
                                 parts_for_history_and_immediate_display.append("\nNessun risultato trovato.")
+                                logger.info("Query eseguita, nessun risultato.")
                         else: # Query execution failed
                             parts_for_history_and_immediate_display.append(f"\n**Errore Esecuzione:**\n{query_result['error']}")
                     else: # DB instance is None
@@ -131,27 +191,24 @@ if app_mode == "Assistente":
             except Exception as e:
                 parts_for_history_and_immediate_display.append(f"\n**Errore Imprevisto:** {e}")
 
-        # Mostra il messaggio dell'assistente nella chat e salvalo nella history
+        # Show the assistant's message in the chat and save it in the history
         if parts_for_history_and_immediate_display:
             assistant_response_content = "\n".join(parts_for_history_and_immediate_display)
             with st.chat_message("assistant"):
                 st.markdown(assistant_response_content, unsafe_allow_html=True)
             st.session_state.messages.append({"role": "assistant", "content": assistant_response_content})
 
-        # Se abbiamo risultati o contesto da mostrare nella sezione persistente, forziamo un rerun
-        # per farla apparire subito sotto la chat.
-        if st.session_state.show_last_query_results or st.session_state.context_to_display:
+        # If we have results or context to show in the persistent section, we force a rerun
+        # to make it appear immediately below the chat.
+        if st.session_state.show_last_query_results:
             st.rerun()
 
-    # ---- SEZIONE DI VISUALIZZAZIONE PERSISTENTE ----
-    # Questa sezione viene eseguita SEMPRE DOPO il blocco 'if prompt' (se c'è stato input)
-    # e dopo il loop dei messaggi, quindi ad ogni rerun.
-
-    if st.session_state.get('df_to_display') is not None:
-        st.sidebar.write(f"DF empty: {st.session_state.df_to_display.empty}")
+    # ---- PERSISTENT DISPLAY SECTION
+    # This section is ALWAYS executed AFTER the 'if prompt' block (if there was input)
+    # and after the message loop, then at each rerun.
 
     if st.session_state.show_last_query_results and st.session_state.df_to_display is not None:
-        st.markdown("---") # Separatore visivo
+        st.markdown("---")
 
         df_display = st.session_state.df_to_display
         if not df_display.empty:
@@ -162,7 +219,7 @@ if app_mode == "Assistente":
             st.dataframe(df_display.head(display_limit))
 
             csv_data = df_display.to_csv(index=False).encode('utf-8')
-            unique_download_key = f"download_csv_{len(df_display)}_{df_display.columns.tolist()}"
+            unique_download_key = f"download_csv_{datetime.now().timestamp()}"
 
             st.download_button(
                 label="📥 Scarica risultati completi (CSV)",
@@ -174,10 +231,7 @@ if app_mode == "Assistente":
         else:
             st.info("L'ultima query è stata eseguita con successo ma non ha prodotto dati.")
 
-    if st.session_state.context_to_display:
-        with st.expander("Contesto RAG Utilizzato (dall'ultima query)", expanded=False):
-            st.markdown(st.session_state.context_to_display)
-
+# ---- Analytic Mode ----
 elif app_mode == "Analitiche":
     st.sidebar.info("Visualizza le analitiche del tuo database. Le analitiche sono predefinite e non richiedono input da parte dell'utente.")
     st.header("Analitiche Cliniche")
@@ -210,7 +264,7 @@ elif app_mode == "Analitiche":
 
         elif chosen_analytics == "Distribuzione Pazienti per Comune di nascita":
             data_df, error = ad.get_distribuzione_comune_di_nascita(db)
-            if error: 
+            if error:
                 st.error(error)
             elif not data_df.empty:
                 st.subheader("Distribuzione Pazienti per Comune di nascita")
@@ -218,13 +272,13 @@ elif app_mode == "Analitiche":
                 if "Comune di nascita" in data_df.columns and "Numero Pazienti" in data_df.columns:
                     st.bar_chart(data_df.set_index("Comune di nascita"))
             else:
-                st.info("Nessun dato disponibile per questa analisi") 
+                st.info("Nessun dato disponibile per questa analisi")
 
         elif chosen_analytics == "Casi di Scompensi cardiaci per anno":
             data_df, error = ad.get_heart_failure_by_year(db)
             if error:
                 st.error(error)
-            elif not data_df.empty: 
+            elif not data_df.empty:
                 st.subheader("Numero di Casi di Heart Failure per Anno")
                 st.dataframe(data_df)
 
@@ -242,9 +296,9 @@ elif app_mode == "Analitiche":
 
                     plt.tight_layout()
                     st.pyplot(fig)
-                else: 
+                else:
                     st.warning("Le colonne 'Anno' o 'Numero Casi' non sono state trovate nei dati. Verifica la query MongoDB e le intestazioni.")
-            else: 
+            else:
                 st.info("Nessun dato disponibile per l'analisi dei casi di Heart Failure per anno.")
 
 
@@ -295,11 +349,10 @@ elif app_mode == "Analitiche":
                 st.info("Nessun dato disponibile per questa analisi")
 
         elif chosen_analytics == "Lesioni coronografiche":
-            current_dir = os.path.dirname(__file__) 
-            csv_file_path = os.path.join(current_dir, "..", "evaluation", "gold_results", "results_query_n18.csv")
-
+            csv_file_path = os.path.join("src", "evaluation", "gold_results", "results_query_n18.csv")
+            logger.info(f"Tentativo caricamento CSV Lesioni da: {csv_file_path}")
             try:
-                temp_df = pd.read_csv(csv_file_path) 
+                temp_df = pd.read_csv(csv_file_path)
                 error = None
 
                 # Data transformation for treemap
@@ -316,18 +369,18 @@ elif app_mode == "Analitiche":
                         }
                         for col in lesion_columns:
                             data_for_treemap["Tipo Lesione"].append(col)
-                            data_for_treemap["Numero Pazienti"].append(temp_df[col].iloc[0]) 
+                            data_for_treemap["Numero Pazienti"].append(temp_df[col].iloc[0])
 
                         data_df = pd.DataFrame(data_for_treemap)
                     else:
                         st.error("Il file CSV non contiene tutte le colonne di lesione attese (LESIONI_TC, LESIONI_IVA, LESIONI_CX, LESIONI_DX).")
-                        data_df = pd.DataFrame() 
+                        data_df = pd.DataFrame()
                 else:
-                    data_df = pd.DataFrame() 
+                    data_df = pd.DataFrame()
 
 
             except FileNotFoundError:
-                data_df = pd.DataFrame() 
+                data_df = pd.DataFrame()
                 error = f"Il file '{csv_file_path}' non è stato trovato. Assicurati che il percorso sia corretto."
             except Exception as e:
                 data_df = pd.DataFrame()
@@ -336,32 +389,32 @@ elif app_mode == "Analitiche":
             if error:
                 st.error(error)
             elif not data_df.empty:
-                st.subheader("Conteggio Pazienti per Tipo di Lesione (Treemap)") 
+                st.subheader("Conteggio Pazienti per Tipo di Lesione (Treemap)")
 
 
                 if "Tipo Lesione" in data_df.columns and "Numero Pazienti" in data_df.columns:
                     fig, ax = plt.subplots(figsize=(12, 7))
 
 
-                    labels = [f"{row['Tipo Lesione']}\n({row['Numero Pazienti']})" 
+                    labels = [f"{row['Tipo Lesione']}\n({row['Numero Pazienti']})"
                                 for index, row in data_df.iterrows()]
 
-                    squarify.plot(sizes=data_df["Numero Pazienti"], 
-                                    label=labels, 
-                                    alpha=0.8, 
+                    squarify.plot(sizes=data_df["Numero Pazienti"],
+                                    label=labels,
+                                    alpha=0.8,
                                     ax=ax,
-                                    pad=True, 
+                                    pad=True,
                                     text_kwargs={'fontsize': 10, 'color': 'white'})
 
                     ax.set_title("Numero Pazienti per Tipo di Lesione", fontsize=16)
-                    plt.axis('off') 
+                    plt.axis('off')
                     plt.tight_layout()
                     st.pyplot(fig)
                 else:
                     st.warning("Errore interno: Le colonne 'Tipo Lesione' o 'Numero Pazienti' non sono state create correttamente.")
             else:
                 st.info("Nessun dato disponibile per le lesioni.")
-                
+
 
 elif app_mode == "Cartella Clinica Paziente":
     st.sidebar.info("Qui puoi cercare un paziente per codice fiscale o codice paziente e sezione. Potrai ottenere la cartella clinica digitale del paziente.")
@@ -371,7 +424,7 @@ elif app_mode == "Cartella Clinica Paziente":
         st.error(f"Impossibile connettersi al database. Controlla la configurazione.")
     else:
 
-        type_of_search = st.radio("Scegli la modalità di ricerca:",                       
+        type_of_search = st.radio("Scegli la modalità di ricerca:",
             ("Codice Fiscale", "Codice Paziente + Sezione")
         )
 
@@ -384,7 +437,7 @@ elif app_mode == "Cartella Clinica Paziente":
                 if fiscal_code:
                     research_data = {"type": "fiscal_code", "value": fiscal_code}
                     exec_research = True
-                else: 
+                else:
                     st.warning("Per favore, inserisci il codice fiscale.")
 
         elif type_of_search == "Codice Paziente + Sezione":
@@ -400,19 +453,19 @@ elif app_mode == "Cartella Clinica Paziente":
                     research_data = {
                         "type": "code_section",
                         "code": patient_code,
-                        "section": patient_section    
+                        "section": patient_section
                     }
                     exec_research = True
                 else:
                     st.warning("Per favore, inserire codice paziente e sezione.")
-            
+
         if exec_research:
-            st.success(f"Dati per la ricerca: {research_data}")
+            #st.success(f"Dati per la ricerca: {research_data}")
 
             # Doing all queries for the clinical record
             events_list_df, error = ad.get_lista_eventi(db, research_data)
 
-            if error: 
+            if error:
                 st.error(error)
             elif not events_list_df.empty:
                 st.subheader("Lista eventi del paziente")
@@ -435,4 +488,4 @@ elif app_mode == "Cartella Clinica Paziente":
             else:
                 st.info("Nessun dato disponibile per questa analisi")
 
-        
+

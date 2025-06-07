@@ -130,7 +130,7 @@ This guide will walk you through the steps required to set up and run the LLM2Qu
 Before you begin, ensure you have the following:
 
 * Git installed.
-* MongoDB Atlas Account: A free-tier cluster is sufficient. You will need your cluster's connection URI, in the website [MongoDB Atlas](https://www.mongodb.com/it-it/atlas?msockid=2ef09abe795160c13ec18e38788c61da).
+* MongoDB Atlas Account: A free-tier cluster is not sufficient for large dataset. You will need your cluster's connection URI, in the website [MongoDB Atlas](https://www.mongodb.com/it-it/atlas?msockid=2ef09abe795160c13ec18e38788c61da).
 * LLM API Key: An API key for Google Gemini (recommended) or any other large language model service you intend to use.
 
 ### 6.2 Setup Steps

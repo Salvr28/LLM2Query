@@ -3,5 +3,5 @@ secret.json
 /Dataset/
 /Datasets_documentations/
 /chroma_data/
-/__pycache__/
+__pycache__/
 /logs/

@@ -6,7 +6,7 @@ from datetime import datetime
 from src.query_engine.query_generator import MongoDBQueryGenerator
 from src.query_engine.query_executor import execute_mongodb_query
 import config
-import src.app.analytics_dashboard as ad
+import src.analytics.analytics_dashboard as ad
 from pymongo import MongoClient
 import matplotlib.pyplot as plt
 import squarify
@@ -80,10 +80,6 @@ def extract_doc_names_from_rag_context(rag_context):
     try:
         if isinstance(rag_context, str):
             logger.debug("DEBUG: rag_context_data È una stringa. Tentativo di parsing di tutti i nomi.")
-
-            # Trova tutte le corrispondenze del pattern nella stringa concatenata
-            # Pattern: cerca "# Tabella: NOME", "## Collezione: NOME", o "## Documento: NOME" all'inizio di una riga
-            # [\w\s.-]+ cattura il nome (caratteri alfanumerici, spazi, punti, trattini)
             matches = re.findall(r"^(?:# Tabella:|## Collezione:|## Documento:)\s*([\w\s.-]+)", rag_context, re.IGNORECASE | re.MULTILINE)
 
             if matches:
@@ -105,8 +101,6 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 if "df_to_display" not in st.session_state:
     st.session_state.df_to_display = None
-#if "context_to_display" not in st.session_state:
-#    st.session_state.context_to_display = None
 if "show_last_query_results" not in st.session_state:
     st.session_state.show_last_query_results = False
 
@@ -460,7 +454,6 @@ elif app_mode == "Cartella Clinica Paziente":
                     st.warning("Per favore, inserire codice paziente e sezione.")
 
         if exec_research:
-            #st.success(f"Dati per la ricerca: {research_data}")
 
             # Doing all queries for the clinical record
             events_list_df, error = ad.get_lista_eventi(db, research_data)

@@ -205,16 +205,16 @@ class MongoDBQueryGenerator:
 
     def clean_llm_json_output(self, text: str) -> str:
         """
-        Rimuove i blocchi di codice Markdown comuni (es. ```json ... ```) da una stringa.
+        Removes common Markdown code blocks (e.g. ``json ... ``) from a string.
         """
         text = text.strip()
-        # Regex per catturare il contenuto all'interno di ```json ... ``` o ``` ... ```
+        # Regex to capture content inside ```json ... ``` or ``` ... ```
         match = re.match(r"^\s*```(?:[a-zA-Z0-9]+)?\s*([\s\S]*?)\s*```\s*$", text)
         if match:
-            # Se è stato trovato un blocco markdown, restituisce il contenuto catturato
+            # If a markdown block was found, return the captured content
             return match.group(1).strip()
         else:
-            # Se nessun blocco markdown è rilevato, restituisce il testo originale (dopo strip)
+            # If no markdown block is detected, return the original text (after strip)
             return text
 
 

@@ -32,7 +32,7 @@ def get_distibuzione_sesso(db):
         return pd.DataFrame(result), None
     except Exception as e:
         return pd.DataFrame(), f"Error executing query sesso: {e}"
-    
+
 
 def get_distribuzione_comune_di_nascita(db):
     if db is None:
@@ -49,12 +49,12 @@ def get_distribuzione_comune_di_nascita(db):
         return pd.DataFrame(result), None
     except Exception as e:
         return pd.DataFrame(), f"Error executing query comune di nascita: {e}"
-    
+
 def get_principali_cause_decesso(db):
     if db is None:
         return pd.DataFrame(), "Connection to the database failed."
     pipeline = [
-        {"$match": 
+        {"$match":
             {
             "DATA_DECESSO": {"$ne": None, "$exists": True},
             "MOTIVO_DECESSO": {"$ne": None, "$exists": True}
@@ -68,9 +68,9 @@ def get_principali_cause_decesso(db):
     try:
         result = list(db.ANAGRAFICA.aggregate(pipeline))
         return pd.DataFrame(result), None
-    except Exception as e: 
+    except Exception as e:
         return pd.DataFrame(), f"Error executing query motivi di decesso: {e}"
-    
+
 def get_pazienti_per_evento(db):
     if db is None:
         return pd.DataFrame(), "Connection to the database failed."
@@ -82,37 +82,37 @@ def get_pazienti_per_evento(db):
     try:
         result = list(db.LISTA_EVENTI.aggregate(pipeline))
         return pd.DataFrame(result), None
-    except Exception as e: 
+    except Exception as e:
         return pd.DataFrame(), f"Error executing query motivi di decesso: {e}"
 
 def get_heart_failure_by_year(db):
 
     pipeline = [
         {"$match": {
-            "HEART_FAILURE": "YES"    
+            "HEART_FAILURE": "YES"
         }},
         {"$group": {
             "_id" : {"$year": "$DATA"},
-            "count": {"$sum": 1}    
+            "count": {"$sum": 1}
         }},
         {"$project": {
             "Anno": "$_id",
             "Numero Casi": "$count",
-            "_id": 0    
+            "_id": 0
         }},
         {"$sort": {
-            "Anno": 1    
-        }}    
+            "Anno": 1
+        }}
     ]
 
     try:
         result = list(db.ECOCARDIO_DATI.aggregate(pipeline))
         return pd.DataFrame(result), None
-    except Exception as e: 
+    except Exception as e:
         return pd.DataFrame(), f"Error executing query motivi di decesso: {e}"
 
 
-# ------- Functions for medical records ---------------     
+# ------- Functions for medical records ---------------
 def get_lista_eventi(db, search_data: dict):
     if db is None:
         return pd.DataFrame(), "Connection to the database failed"
@@ -120,7 +120,7 @@ def get_lista_eventi(db, search_data: dict):
         return pd.DataFrame(), "Invalid data to find the patient"
     else:
 
-        # Inizializza la fase di match specifica
+        # Initialise specific match phase
         match_stage = {}
 
         if search_data["type"] == "fiscal_code":
@@ -134,19 +134,19 @@ def get_lista_eventi(db, search_data: dict):
         common_pipeline = [
             {"$project": {"ID_PAZ": 1, "_id": 0}},
             {"$lookup": {
-                "from": "LISTA_EVENTI",          
-                "localField": "ID_PAZ",          
-                "foreignField": "ID_PAZ",        
-                "as": "associated_events"        
+                "from": "LISTA_EVENTI",
+                "localField": "ID_PAZ",
+                "foreignField": "ID_PAZ",
+                "as": "associated_events"
             }},
             {"$unwind": "$associated_events"},
             {"$replaceRoot": {"newRoot": "$associated_events"}},
             {"$project": {
-                "Id Paziente": "$ID_PAZ",        
-                "Codice paziente": "$CODPAZ",    
-                "Tipo evento": "$TIPO_EVENTO",   
-                "Data evento": "$DATA",          
-                "_id": 0                         
+                "Id Paziente": "$ID_PAZ",
+                "Codice paziente": "$CODPAZ",
+                "Tipo evento": "$TIPO_EVENTO",
+                "Data evento": "$DATA",
+                "_id": 0
             }}
         ]
 
@@ -160,22 +160,22 @@ def get_lista_eventi(db, search_data: dict):
             return pd.DataFrame(result), None
         except Exception as e:
             return pd.DataFrame(), f"Error during query event_list"
-        
+
 def get_last_anamnesi_data(db, patient_id):
     if db is None:
         return pd.DataFrame(), "Connection to the database failed"
     elif patient_id is None:
         return pd.DataFrame(), "Invalid data to find the patient"
     else:
-        
+
         pipeline = [
             {"$match": {"ID_PAZ": patient_id}},
             {"$project": {"ID_PAZ": 1, "_id": 0}},
             {"$lookup": {
                "from": "LISTA_EVENTI",
                "localField": "ID_PAZ",
-               "foreignField": "ID_PAZ", 
-               "as": "associated_events" 
+               "foreignField": "ID_PAZ",
+               "as": "associated_events"
             }},
             {"$unwind": "$associated_events"},
             {"$match": {"associated_events.TIPO_EVENTO": "ANAMNESI"}},
@@ -185,8 +185,8 @@ def get_last_anamnesi_data(db, patient_id):
             {"$project": {
                 "Id Paziente": "$ID_PAZ",
                 "Tipo Evento": "$TIPO_EVENTO",
-                "Data evento": "$DATA", 
-                "_id": 0    
+                "Data evento": "$DATA",
+                "_id": 0
             }}
         ]
 
@@ -199,7 +199,7 @@ def get_last_anamnesi_data(db, patient_id):
         except Exception as e:
             return pd.DataFrame(), f"Error during query event_list"
 
-    
+
 
 def get_most_worth_from_anamnesi(db, patient_id, date):
     if db is None:
@@ -215,9 +215,9 @@ def get_most_worth_from_anamnesi(db, patient_id, date):
                 "from": "ANAMNESI",
                 "localField": "ID_PAZ",
                 "foreignField": "ID_PAZ",
-                "as": "associated_anamnesi"    
+                "as": "associated_anamnesi"
             }},
-            {"$unwind": "$associated_anamnesi"}, 
+            {"$unwind": "$associated_anamnesi"},
             {"$match": {"associated_anamnesi.DATA": date}},
             {"$replaceRoot": {"newRoot": "$associated_anamnesi"}},
             {"$project": {
@@ -225,7 +225,6 @@ def get_most_worth_from_anamnesi(db, patient_id, date):
                 "Data ultima Anamnesi": "$DATA",
                 "Diabete": "$DIABETE",
                 "Dislipedemia Generica": "$DISLIPEDEMIA",
-                # POTREI METTERE TUTTE LE DISLIPEDEMIE
                 "Il paziente Fuma": "$FUMO",
                 "Infarto Miocardio Acuto Pregresso": "$PREVIOUS_IMA",
                 "Intervento Coronarico Percutaneo (PCI/PTCA) pregresso": "$PREVIOUS_PCI",
@@ -236,7 +235,7 @@ def get_most_worth_from_anamnesi(db, patient_id, date):
                 "Familiarità per patologie cardiache": "$CAD_FAMILIARITY_CARDIAC",
                 "Familiarità generica per Coronary Artery Disease": "$CAD_FAMILIARITY",
                 "_id": 0
-            }}   
+            }}
         ]
 
         try:
@@ -247,5 +246,4 @@ def get_most_worth_from_anamnesi(db, patient_id, date):
             return pd.DataFrame(result), None
         except Exception as e:
             return pd.DataFrame(), f"Error during query event_list"
-       
-       
+

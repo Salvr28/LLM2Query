@@ -1,5 +1,5 @@
 import os
-import config  
+import config
 from pymongo import MongoClient
 from src.query_engine.query_executor import MongoDBQueryExecutor
 from typing import Dict, Any
@@ -7,7 +7,7 @@ import pandas as pd
 
 
 # ---- Mongo Client Config ----
-try: 
+try:
     client = MongoClient(config.MONGO_URI, serverSelectionTimeoutMS=5000)
     client.server_info()
     db = client[config.MONGO_DB_NAME]
@@ -22,51 +22,6 @@ executor = MongoDBQueryExecutor(db)
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
 results_path = os.path.join(current_script_dir, "gold_results")
 
-
-def gold_easy_query_n1() -> Dict[str, Any]:
-    """
-    Returns the Gold json for a test query
-
-    Numer of query: N1
-    Difficulty: Easy
-    User Need: Mi dici dove è nato e quando è nato 
-    il paziente con questo codice fiscale GLNGNR56D21F839J
-    """
-
-    gold_json = {
-        "collection_name": "ANAGRAFICA",
-        "operation_type": "find",
-        "arguments": {
-            "filter": {
-                "CODICE_FISCALE": "GLNGNR56D21F839J"    
-            },
-            "projection": {
-                "COMUNE_DI_NASCITA": 1,
-                "DATADINASCITA": 1,
-                "_id": 0    
-            }    
-        }    
-    }
-
-    return gold_json
-
-def gold_easy_query_n2():
-
-    gold_json = {
-        "collection_name": "LISTA_EVENTI",
-        "operation_type": "find",
-        "arguments": {
-            "filter": {
-                "ID_PAZ": "1_7"    
-            },   
-            "projection": {
-                "_id": 0 
-            } 
-        }
-    }
-
-    return gold_json
-
 def gold_easy_query_n3():
 
     gold_json = {
@@ -74,12 +29,12 @@ def gold_easy_query_n3():
         "operation_type": "find",
         "arguments": {
             "filter": {
-                "COMUNE_DI_NASCITA": "TEANO"    
+                "COMUNE_DI_NASCITA": "TEANO"
             },
             "projection": {
-                "_id": 0    
-            }   
-        }    
+                "_id": 0
+            }
+        }
     }
 
     return gold_json
@@ -92,15 +47,15 @@ def gold_easy_query_n4():
         "arguments": {
             "filter": {
                 "ID_PAZ": "1_7",
-                "DATA": "2006-06-07T00:00:00.000+00:00"    
+                "DATA": "2006-06-07T00:00:00.000+00:00"
             },
             "projection": {
                 "FT3": 1,
                 "FT4": 1,
                 "TSH":  1,
-                "_id": 0 
-            }    
-        }    
+                "_id": 0
+            }
+        }
     }
 
     return gold_json
@@ -108,13 +63,13 @@ def gold_easy_query_n4():
 def gold_easy_query_n5():
 
     """
-    User Need: Mostra tutti dati di anamnesi del 
+    User Need: Mostra tutti dati di anamnesi del
     paziente con id paziente 1_7
     """
 
     gold_json = {
         "collection_name": "ANAMNESI",
-        "operation_type": "find", 
+        "operation_type": "find",
         "arguments": {
             "ID_PAZ": "1_7"
         },
@@ -125,11 +80,11 @@ def gold_easy_query_n5():
 
     return gold_json
 
-def gold_medium_query_n11(): 
+def gold_medium_query_n11():
 
     """
-    User Need: Trova nome, cognome e data di nascita dei 
-    pazienti di Teano che hanno avuto 
+    User Need: Trova nome, cognome e data di nascita dei
+    pazienti di Teano che hanno avuto
     un infarto miocardico acuto pregresso
     """
 
@@ -142,20 +97,20 @@ def gold_medium_query_n11():
                     "from": "ANAMNESI",
                     "localField": "ID_PAZ",
                     "foreignField": "ID_PAZ",
-                    "as": "an_data"    
+                    "as": "an_data"
                 }},
                 {"$match": {
                     "COMUNE_DI_NASCITA": "TEANO",
-                    "an_data.PREVIOUS_IMA": "YES"    
+                    "an_data.PREVIOUS_IMA": "YES"
                 }},
                 {"$project": {
                     "_id": 0,
                     "Nome Paziente": "$NOMEPAZ",
                     "Cognome Paziente": "$COGNOME",
-                    "Data di nascita": "$DATADINASCITA", 
-                    "IMA": "$an_data.PREVIOUS_IMA"   
-                }}      
-            ]    
+                    "Data di nascita": "$DATADINASCITA",
+                    "IMA": "$an_data.PREVIOUS_IMA"
+                }}
+            ]
         }
     }
 
@@ -164,8 +119,8 @@ def gold_medium_query_n11():
 def gold_medium_query_n12():
 
     """
-    User Need: Per ogni sezione conta quanti 
-    pazienti soffrono di diabete 
+    User Need: Per ogni sezione conta quanti
+    pazienti soffrono di diabete
     """
 
     gold_json = {
@@ -174,32 +129,32 @@ def gold_medium_query_n12():
         "arguments": {
             "pipeline": [
                 {"$match": {
-                    "DIABETE": "YES",    
+                    "DIABETE": "YES",
                 }},
                 {"$group": {
-                    "_id": "$SEZIONE", 
+                    "_id": "$SEZIONE",
                     "count": {
-                        "$sum": 1    
-                    }   
+                        "$sum": 1
+                    }
                 }},
                 {"$sort": {
-                    "count": -1    
+                    "count": -1
                 }},
                 {"$project": {
                     "Sezione": "$_id",
                     "Numero pazienti": "$count",
-                    "_id": 0    
-                }}    
+                    "_id": 0
+                }}
             ]
-        }   
+        }
     }
 
     return gold_json
 
 def gold_medium_query_n13():
-    
+
     """
-    User Need: Qual è il valore massimo di glicemia 
+    User Need: Qual è il valore massimo di glicemia
     registrato per il paziente con id paziente 1_7
     """
 
@@ -209,21 +164,21 @@ def gold_medium_query_n13():
         "arguments": {
             "pipeline": [
                 {"$match": {
-                    "ID_PAZ": "1_7"    
+                    "ID_PAZ": "1_7"
                 }},
                 {"$group": {
                     "_id": None,
                     "glicemiaMassima": {
-                        "$max": "$GLICEMIA"    
+                        "$max": "$GLICEMIA"
                     }
-                }}, 
+                }},
                 {"$project": {
                     "Id Paziente": "1_7",
                     "Massima Glicemia": "$glicemiaMassima",
-                    "_id": 0    
-                }}    
-            ]    
-        }    
+                    "_id": 0
+                }}
+            ]
+        }
     }
 
     return gold_json
@@ -231,8 +186,8 @@ def gold_medium_query_n13():
 def gold_medium_query_n14():
 
     """
-    User Need: Elenca  i primi 100 
-    pazienti (nome, cognome) che soffrono 
+    User Need: Elenca  i primi 100
+    pazienti (nome, cognome) che soffrono
     di insufficienza cardiaca
     """
 
@@ -242,37 +197,37 @@ def gold_medium_query_n14():
         "arguments": {
             "pipeline": [
                 {"$match": {
-                    "HEART_FAILURE": "YES"    
-                }}, 
+                    "HEART_FAILURE": "YES"
+                }},
                 {"$lookup": {
                     "from": "ANAGRAFICA",
                     "localField": "ID_PAZ",
                     "foreignField": "ID_PAZ",
-                    "as": "anagrafica_dati"    
-                }}, 
+                    "as": "anagrafica_dati"
+                }},
                 {"$unwind": "$anagrafica_dati"},
-                {"$group": { 
-                    "_id": "$ID_PAZ", 
-                    "Nome Paziente": {"$first": "$anagrafica_dati.NOMEPAZ"}, 
+                {"$group": {
+                    "_id": "$ID_PAZ",
+                    "Nome Paziente": {"$first": "$anagrafica_dati.NOMEPAZ"},
                     "Cognome Paziente": {"$first": "$anagrafica_dati.COGNOME"}
                 }},
                 {"$project": {
                     "_id": 0,
                     "Nome paziente": "$Nome Paziente",
                     "Cognome_paziente": "$Cognome Paziente",
-                    "Insufficienza cardiaca": "YES"    
+                    "Insufficienza cardiaca": "YES"
                 }},
                 {"$limit": 100}
-            ]    
-        }    
+            ]
+        }
     }
 
     return gold_json
 
-def gold_medium_query_n15(): 
+def gold_medium_query_n15():
 
     """
-    User Need: Mostra tutti gli esami del sangue 
+    User Need: Mostra tutti gli esami del sangue
     per i pazienti nati dopo il 1990
     """
 
@@ -283,14 +238,14 @@ def gold_medium_query_n15():
             "pipeline": [
                 {"$match": {
                     "DATADINASCITA": {
-                        "$gt": "1990-01-01T00:00:00.000+00:00"    
-                    }    
+                        "$gt": "1990-01-01T00:00:00.000+00:00"
+                    }
                 }},
                 {"$lookup": {
                     "from": "ESAMI_LABORATORIO",
                     "localField": "ID_PAZ",
                     "foreignField": "ID_PAZ",
-                    "as": "esami_data"    
+                    "as": "esami_data"
                 }},
                 {"$unwind": "$esami_data"},
                 {"$project": {
@@ -298,18 +253,18 @@ def gold_medium_query_n15():
                     "ID_PAZ": "$ID_PAZ",
                     "Nome Paziente": "$NOMEPAZ",
                     "Cognome Paziente": "$COGNOME",
-                    "Data Esame": "$esami_data.DATA"    
+                    "Data Esame": "$esami_data.DATA"
                 }}
-            ]    
-        }    
+            ]
+        }
     }
 
     return gold_json
 
 def gold_difficult_query_n21():
-    
+
     """
-    User Need: Per i pazienti con una insufficienza cardiaca, 
+    User Need: Per i pazienti con una insufficienza cardiaca,
     calcola la media del loro BMI e la media del filtrato GFR
     """
 
@@ -339,7 +294,7 @@ def gold_difficult_query_n21():
                 },
                 {
                     "$group": {
-                        "_id": None, 
+                        "_id": None,
                         "avg_bmi": {
                             "$avg": "$PESO"
                         },
@@ -350,7 +305,7 @@ def gold_difficult_query_n21():
                 },
                 {
                     "$project": {
-                        "_id": 0,       
+                        "_id": 0,
                         "avg_bmi": 1,
                         "avg_gfr": 1
                     }
@@ -364,8 +319,8 @@ def gold_difficult_query_n21():
 def gold_difficult_query_n22():
 
     """
-    User Need: Per ogni paziente di Napoli che soffre di diabete e di insufficienza cardiaca, 
-    mostrami l’id paziente, il cognome ed il nome con valore medio di 
+    User Need: Per ogni paziente di Napoli che soffre di diabete e di insufficienza cardiaca,
+    mostrami l’id paziente, il cognome ed il nome con valore medio di
     glicemia e valore medio di EF. Ordina per cognome.
     """
 
@@ -375,47 +330,47 @@ def gold_difficult_query_n22():
         "arguments": {
             "pipeline": [
                 {"$match": {
-                    "COMUNE_DI_NASCITA": "NAPOLI"    
+                    "COMUNE_DI_NASCITA": "NAPOLI"
                 }},
                 {"$lookup": {
                     "from": "ANAMNESI",
                     "localField": "ID_PAZ",
                     "foreignField": "ID_PAZ",
-                    "as": "an_data"    
+                    "as": "an_data"
                 }},
                 {"$unwind": "$an_data"},
                 {"$match": {
-                    "an_data.DIABETE": "YES"    
+                    "an_data.DIABETE": "YES"
                 }},
                 {"$lookup": {
                     "from": "ECOCARDIO_DATI",
                     "localField": "ID_PAZ",
                     "foreignField": "ID_PAZ",
-                    "as": "eco_data"    
+                    "as": "eco_data"
                 }},
                 {"$unwind": "$eco_data"},
                 {"$match": {
-                    "eco_data.HEART_FAILURE": "YES"    
+                    "eco_data.HEART_FAILURE": "YES"
                 }},
                 {"$lookup": {
                     "from": "ESAMI_LABORATORIO",
                     "localField": "ID_PAZ",
                     "foreignField": "ID_PAZ",
-                    "as": "lab_data"    
+                    "as": "lab_data"
                 }},
                 {"$unwind": "$lab_data"},
                 {"$group": {
                     "_id": {
                         "ID_PAZ": "$ID_PAZ",
                         "Nome Paziente": "$NOMEPAZ",
-                        "Cognome Paziente": "$COGNOME"    
-                    }, 
+                        "Cognome Paziente": "$COGNOME"
+                    },
                     "avg_glicemia": {
                         "$avg": "$lab_data.GLICEMIA"
                     },
                     "avg_ef": {
                         "$avg": "$eco_data.EF"
-                    }    
+                    }
                 }},
                 {"$projection": {
                     "_id": 0,
@@ -423,13 +378,13 @@ def gold_difficult_query_n22():
                     "cognome": "$_id.Cognome Paziente",
                     "nome": "$_id.Nome Paziente",
                     "avg_glicemia": 1,
-                    "avg_ef": 1   
+                    "avg_ef": 1
                 }},
                 {"$sort": {
-                    "cognome": 1    
+                    "cognome": 1
                 }}
 
-            ]    
+            ]
         }
     }
 
@@ -439,7 +394,7 @@ def gold_difficult_query_n22():
 def gold_difficult_query_n23():
 
     """
-    User Need: Per ogni sezione trova il paziente con il BMI più 
+    User Need: Per ogni sezione trova il paziente con il BMI più
     alto registrato ed il paziente con filtrato GFR più basso.
     """
 
@@ -464,9 +419,9 @@ def gold_difficult_query_n23():
                 },
                 {
                     "$group": {
-                        "_id": "$SEZIONE", 
-                        "max_bmi_value": { "$max": "$BMI" }, 
-                        "min_gfr_value": { "$min": "$esami_lab.FILTRATO_GFR" }, 
+                        "_id": "$SEZIONE",
+                        "max_bmi_value": { "$max": "$BMI" },
+                        "min_gfr_value": { "$min": "$esami_lab.FILTRATO_GFR" },
                         "all_patients_in_section": {
                             "$push": {
                                 "ID_PAZ": "$ID_PAZ",
@@ -478,8 +433,8 @@ def gold_difficult_query_n23():
                 },
                 {
                     "$project": {
-                        "_id": 0, 
-                        "SEZIONE": "$_id", 
+                        "_id": 0,
+                        "SEZIONE": "$_id",
                         "max_bmi": "$max_bmi_value",
                         "min_gfr": "$min_gfr_value",
                         "id_paz_max_bmi": {
@@ -519,15 +474,8 @@ if __name__ == "__main__":
 
     query_number_str = input("Insert Number of query to execute: ")
     query_number = int(query_number_str)
-    
+
     callable_queries = [
-        gold_easy_query_n1,
-        gold_easy_query_n2,
-        gold_easy_query_n3,
-        gold_easy_query_n4,
-        gold_easy_query_n5,
-        gold_easy_query_n1,
-        gold_easy_query_n2,
         gold_easy_query_n3,
         gold_easy_query_n4,
         gold_easy_query_n5,
@@ -535,23 +483,23 @@ if __name__ == "__main__":
         gold_medium_query_n12,
         gold_medium_query_n13,
         gold_medium_query_n14,
-        gold_medium_query_n15    
+        gold_medium_query_n15
     ]
 
     if query_number > 0 and query_number <= len(callable_queries):
-        
+
         gold_json = callable_queries[query_number-1]()
         result_data = executor.execute_query(gold_json)
 
         df = pd.json_normalize(result_data['data'])
         df.to_csv(os.path.join(results_path, f"results_query_n{query_number}.csv"), index=False)
         print(f"Query executed correctly, results query_n{query_number} saved")
-        
+
 
     else:
         print("Not Valid query for this testset")
 
 
-    
+
 
 

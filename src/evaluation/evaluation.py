@@ -1,62 +1,62 @@
 import pandas as pd
-import os
+import numpy as np
 
-def load_csv_and_get_data_concat(csv_path, id_column, avg_columns=None, precision_decimals=4):
+def load_data_for_evaluation(csv_path, id_column, value_columns_to_check):
     """
-    Carica un CSV, crea una colonna concatenata di ID e valori aggregati,
-    e restituisce un set di queste chiavi concatenate.
-    Args:
-        csv_path (str): Percorso del file CSV.
-        id_column (str): Nome della colonna ID_PAZ.
-        avg_columns (list): Lista dei nomi delle colonne con valori medi (es. ['avg_bmi', 'avg_gfr']).
-        precision_decimals (int): Numero di decimali per arrotondare i valori numerici prima di concatenare.
-    Returns:
-        set: Un set di stringhe concatenate (ID_PAZ_avg_bmi_avg_gfr), o None in caso di errore.
+    Loads data from the CSV, extracting the specified ID and value columns.
+    Returns a set of tuples, where each tuple represents a record
+    (id, value1, value2, ...). Numeric values are rounded
+    and missing values (NaN) are converted into a placeholder string 'MISSING'.
     """
     try:
-        df = pd.read_csv(csv_path.strip(), dtype=str)
+        # Reads ID as string and attempts to convert other columns to numeric
+        # Keeps ID as string to avoid problems with numeric formats
+        df = pd.read_csv(csv_path, dtype={id_column: str})
+
+        for col in value_columns_to_check:
+            if col in df.columns:
+                df[col] = pd.to_numeric(df[col], errors='coerce')
+            else:
+                print(f"Warning: Value column '{col}' is not present in {csv_path}. It will be treated as missing for all records.")
+                df[col] = np.nan # Create the column with NaN if it doesn't exist
 
         if df.empty:
             print(f"No data found in {csv_path}")
             return set()
 
         if id_column not in df.columns:
-            print(f"Column '{id_column}' not found in {csv_path}")
-            return set()
+            print(f"ID column '{id_column}' not found in {csv_path}")
+            return set() # Returns an empty set if the ID column is not present
 
-        # Prepara i valori numerici per la concatenazione
-        concatenated_keys = set()
-        for index, row in df.iterrows():
-            id_value = str(row[id_column]).strip()
-            
-            # Costruisce la parte dei valori medi della chiave concatenata
-            avg_parts = []
-            if avg_columns:
-                for col in avg_columns:
-                    if col in df.columns:
-                        # Converti in numerico, arrotonda e poi converti in stringa. Gestisci NaN.
-                        val = pd.to_numeric(row[col], errors='coerce')
-                        if pd.isna(val):
-                            avg_parts.append("N/A") # Rappresentazione per valori mancanti
-                        else:
-                            avg_parts.append(f"{val:.{precision_decimals}f}") # Formatta con decimali
-                    else:
-                        avg_parts.append("COL_MISSING") # Se la colonna non esiste nel CSV
-            
-            # Concatena tutte le parti
-            composite_key = f"{id_value}_" + "_".join(avg_parts)
-            concatenated_keys.add(composite_key)
+        records = set()
+        for _, row in df.iterrows():
+            identifier = row[id_column]
 
-        print(f"Loaded {len(concatenated_keys)} composite keys from {csv_path}")
-        # print(concatenated_keys) # Uncomment for debugging
-        return concatenated_keys
+            # Skip rows if the main identifier is missing
+            if pd.isna(identifier) or str(identifier).strip() == "":
+                continue
+
+            current_record_values = [identifier]
+            for col in value_columns_to_check:
+                value = row[col]
+                if pd.isna(value):
+                    current_record_values.append("MISSING")
+                elif isinstance(value, float):
+                    current_record_values.append(round(value, 4))
+                else: # Integers or other types converted from to_numeric
+                    current_record_values.append(value)
+
+            records.add(tuple(current_record_values))
+
+        return records
 
     except FileNotFoundError:
         print(f"File not found: {csv_path}")
         return None
     except Exception as e:
-        print(f"Error reading {csv_path}: {e}")
+        print(f"Error loading {csv_path}: {e}")
         return None
+
 
 def load_csv_and_get_ids(csv_path, id_column):
 
@@ -102,24 +102,27 @@ def calculate_metrics(gold_ids, results_ids):
 
 
 if __name__ == "__main__":
+    gold_csv_path = "results_query_n16.csv"
+    results_rag_csv_path = "risultati_query_16.csv"
+    results_no_rag_csv_path = "risultati_query_wr_16.csv"
 
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-
-    gold_csv_path = os.path.join(script_dir, "gold_results", "results_query_n20.csv")
-    results_rag_csv_path = os.path.join(script_dir, "rag_results", "risultati_query_20.csv")
-    results_no_rag_csv_path = os.path.join(script_dir, "wrag_results", "risultati_query_wr_20.csv")
-
-
-    id_column = "ID_PAZ"
+    id_column = "total"
+    # Uncomment the following line if you want to check specific value columns
+    #value_columns_to_check = ['uomini', 'donne']
 
     gold_ids = load_csv_and_get_ids(gold_csv_path, id_column)
     results_rag_ids = load_csv_and_get_ids(results_rag_csv_path, id_column)
     results_no_rag_ids = load_csv_and_get_ids(results_no_rag_csv_path, id_column)
 
+    # If you want to check specific value columns, uncomment the following lines
+    #gold_ids = load_data_for_evaluation(gold_csv_path, id_column, value_columns_to_check)
+    #results_rag_ids = load_data_for_evaluation(results_rag_csv_path, id_column, value_columns_to_check)
+    #results_no_rag_ids = load_data_for_evaluation(results_no_rag_csv_path, id_column, value_columns_to_check)
+
     metrics_rag = calculate_metrics(gold_ids, results_rag_ids)
     metrics_no_rag = calculate_metrics(gold_ids, results_no_rag_ids)
 
-    print("\nMetrics for RAG Results:")
+    print("Metrics for RAG Results:")
     print("-------------------------")
     for metric, value in metrics_rag.items():
         if isinstance(value, float):
@@ -127,8 +130,8 @@ if __name__ == "__main__":
         else:
             print(f"{metric}: {value}")
 
-    print("\nMetrics for Non-RAG Results:")
-    print("-------------------------")
+    print("Metrics for Non-RAG Results:")
+    print("------------------------------")
     for metric, value in metrics_no_rag.items():
         if isinstance(value, float):
             print(f"{metric}: {value:.4f}")

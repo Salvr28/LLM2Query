@@ -107,7 +107,7 @@ Our benchmark methodology is designed to provide a clear comparison between the 
     * 5 Difficult Queries
 
 ### 4.2 System Evaluation
-* We ran each of the 30 natural language queries through our LLM2Query system under two configurations:
+* We ran each of the 25 natural language queries through our LLM2Query system under two configurations:
   * With RAG: The system leverages the Retrieval Augmented Generation approach to enrich the LLM's context for query generation.
   * Without RAG: The system relies solely on the LLM's inherent knowledge for query generation, without the additional context provided by RAG.
 

@@ -66,3 +66,4 @@ MONGO_URI = secrets.get(MONGO_URI_KEY)
 
 if not MONGO_URI:
     print(f"[MONGO URI Error]: Key {MONGO_URI_KEY} not found in {SECRETS_FILE}")
+

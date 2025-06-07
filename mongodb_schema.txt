@@ -10,6 +10,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODICE_FISCALE": 1
                     }
                 },
@@ -35,6 +40,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -85,6 +93,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -109,6 +122,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -183,6 +199,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -207,6 +228,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -251,6 +275,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -275,6 +304,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -424,6 +456,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -448,6 +485,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -534,6 +574,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -558,6 +603,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -659,6 +707,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -683,6 +736,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -724,6 +780,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -748,6 +809,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -783,6 +847,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -807,6 +876,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -830,171 +902,16 @@
             }
         },
         {
-            "name": "PREVALENT",
-            "indexes": [
-                {
-                    "key": {
-                        "_id": 1
-                    }
-                },
-                {
-                    "key": {
-                        "CODPAZ": 1
-                    }
-                },
-                {
-                    "key": {
-                        "DATA": 1
-                    }
-                }
-            ],
-            "uniqueIndexes": [],
-            "document": {
-                "properties": {
-                    "_id": {
-                        "bsonType": "objectId"
-                    },
-                    "SEZIONE": {
-                        "bsonType": "number"
-                    },
-                    "CODPAZ": {
-                        "bsonType": "number"
-                    },
-                    "DATA": {
-                        "bsonType": "date"
-                    },
-                    "DIABETE": {
-                        "bsonType": "string"
-                    },
-                    "DIABETE_INSULINE_TREATED": {
-                        "bsonType": "string"
-                    },
-                    "DIABETE_ORAL_TERAPY": {
-                        "bsonType": "string"
-                    },
-                    "DISLIPIDEMIA": {
-                        "bsonType": "string"
-                    },
-                    "DISLIPIDEMIA_STATINE": {
-                        "bsonType": "string"
-                    },
-                    "DISLIPIDEMIA_FIBRATI": {
-                        "bsonType": "string"
-                    },
-                    "BMI": {
-                        "bsonType": "number"
-                    },
-                    "OBESITA": {
-                        "bsonType": "string"
-                    },
-                    "PREVIOUS_IMA": {
-                        "bsonType": "string"
-                    },
-                    "CAD": {
-                        "bsonType": "string"
-                    },
-                    "ATRIAL_FIBRILLATION": {
-                        "bsonType": "string"
-                    },
-                    "PESO": {
-                        "bsonType": "number"
-                    },
-                    "ALTEZZA": {
-                        "bsonType": "number"
-                    },
-                    "PASDOMICILIO": {
-                        "bsonType": "number"
-                    },
-                    "PADDOMICILIO": {
-                        "bsonType": "number"
-                    },
-                    "PACLINOMINM": {
-                        "bsonType": "number"
-                    },
-                    "PACLINOMAXM": {
-                        "bsonType": "number"
-                    },
-                    "FREQCLINO": {
-                        "bsonType": "number"
-                    },
-                    "PAORTOMINM": {
-                        "bsonType": "number"
-                    },
-                    "PAORTOMAXM": {
-                        "bsonType": "number"
-                    },
-                    "FREQORTO": {
-                        "bsonType": "number"
-                    },
-                    "PASITMINM": {
-                        "bsonType": "number"
-                    },
-                    "PASITMAXM": {
-                        "bsonType": "number"
-                    },
-                    "FREQSIT": {
-                        "bsonType": "number"
-                    },
-                    "FUMO": {
-                        "bsonType": "string"
-                    },
-                    "DIURETICI": {
-                        "bsonType": "string"
-                    },
-                    "ALFABLOCCANTI": {
-                        "bsonType": "string"
-                    },
-                    "BETABLOCCANTI": {
-                        "bsonType": "string"
-                    },
-                    "ACEINIBITORI": {
-                        "bsonType": "string"
-                    },
-                    "AT1ANTAGONISTI": {
-                        "bsonType": "string"
-                    },
-                    "DIIDROPIRIDINICI": {
-                        "bsonType": "string"
-                    },
-                    "ANTIARITMICI": {
-                        "bsonType": "string"
-                    },
-                    "ANTIAGGREGANTI": {
-                        "bsonType": "string"
-                    },
-                    "ANTICOAGULANTI": {
-                        "bsonType": "string"
-                    },
-                    "SEGUETERAPIA": {
-                        "bsonType": "string"
-                    },
-                    "TIPO_DI_RICOVERO_CARDIO": {
-                        "bsonType": "string"
-                    },
-                    "TIPO_DI_RICOVERO_EXTRA": {
-                        "bsonType": "string"
-                    },
-                    "CAUSA_RICOVERO_EXTRA": {
-                        "bsonType": "string"
-                    },
-                    "NYHA": {
-                        "bsonType": "string"
-                    },
-                    "STADIO_SCOMPENSO": {
-                        "bsonType": "string"
-                    },
-                    "GATE_DI_INGRESSO": {
-                        "bsonType": "string"
-                    }
-                }
-            }
-        },
-        {
             "name": "RICOVERO_OSPEDALIERO",
             "indexes": [
                 {
                     "key": {
                         "_id": 1
+                    }
+                },
+                {
+                    "key": {
+                        "ID_PAZ": 1
                     }
                 },
                 {
@@ -1023,6 +940,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"
@@ -1055,158 +975,6 @@
             }
         },
         {
-            "name": "TEXT",
-            "indexes": [
-                {
-                    "key": {
-                        "_id": 1
-                    }
-                },
-                {
-                    "key": {
-                        "CODPAZ": 1
-                    }
-                },
-                {
-                    "key": {
-                        "DATA": 1
-                    }
-                },
-                {
-                    "key": {
-                        "NUM_PROGRESSIVO": 1
-                    }
-                },
-                {
-                    "key": {
-                        "NUM_PROGRESSIVO_GLOBALE": 1
-                    }
-                }
-            ],
-            "uniqueIndexes": [],
-            "document": {
-                "properties": {
-                    "_id": {
-                        "bsonType": "objectId"
-                    },
-                    "SEZIONE": {
-                        "bsonType": "number"
-                    },
-                    "CODPAZ": {
-                        "bsonType": "number"
-                    },
-                    "DATA": {
-                        "bsonType": "date"
-                    },
-                    "NUM_PROGRESSIVO": {
-                        "bsonType": "number"
-                    },
-                    "TIPO_EVENTO": {
-                        "bsonType": "string"
-                    },
-                    "TEXT": {
-                        "bsonType": "string"
-                    },
-                    "MATCHED_CONCEPTS": {
-                        "bsonType": "string"
-                    },
-                    "DIABETE": {
-                        "bsonType": "string"
-                    },
-                    "DISLIPIDEMIA": {
-                        "bsonType": "string"
-                    },
-                    "DISLIPIDEMIA_IPERCOLESTEROLEMIA": {
-                        "bsonType": "string"
-                    },
-                    "DISLIPIDEMIA_IPERTRIGLICERIDEMIA": {
-                        "bsonType": "string"
-                    },
-                    "DISLIPIDEMIA_MISTA": {
-                        "bsonType": "string"
-                    },
-                    "FUMO_CURRENT": {
-                        "bsonType": "string"
-                    },
-                    "FUMO_EX": {
-                        "bsonType": "string"
-                    },
-                    "IPERTENSIONE_ARTERIOSA": {
-                        "bsonType": "string"
-                    },
-                    "OBESITA": {
-                        "bsonType": "string"
-                    },
-                    "IRC_CKD": {
-                        "bsonType": "string"
-                    },
-                    "IRC_STADIO5": {
-                        "bsonType": "string"
-                    },
-                    "CAD": {
-                        "bsonType": "string"
-                    },
-                    "CAD_FAMILIARITY": {
-                        "bsonType": "string"
-                    },
-                    "BPCO": {
-                        "bsonType": "string"
-                    },
-                    "ATRIAL_FIBRILLATION": {
-                        "bsonType": "string"
-                    },
-                    "PREVIOUS_IMA": {
-                        "bsonType": "string"
-                    },
-                    "PREVIOUS_PCI": {
-                        "bsonType": "string"
-                    },
-                    "PREVIOUS_CABG": {
-                        "bsonType": "string"
-                    },
-                    "STROKE": {
-                        "bsonType": "string"
-                    },
-                    "REVASCULARIZATION_PERIPHERAL": {
-                        "bsonType": "string"
-                    },
-                    "AORTIC_DISEASE": {
-                        "bsonType": "string"
-                    },
-                    "HEART_FAILURE": {
-                        "bsonType": "string"
-                    },
-                    "PERIPHERAL_ARTERY_DISEASE": {
-                        "bsonType": "string"
-                    },
-                    "SVA_SVM": {
-                        "bsonType": "string"
-                    },
-                    "ICD": {
-                        "bsonType": "string"
-                    },
-                    "PM": {
-                        "bsonType": "string"
-                    },
-                    "CRT_D": {
-                        "bsonType": "string"
-                    },
-                    "MATCHED_CONCEPTS_1": {
-                        "bsonType": "string"
-                    },
-                    "MATCHED_CONCEPT_TYPES": {
-                        "bsonType": "string"
-                    },
-                    "NUM_PROGRESSIVO_GLOBALE": {
-                        "bsonType": "number"
-                    },
-                    "GATE_DI_INGRESSO": {
-                        "bsonType": "string"
-                    }
-                }
-            }
-        },
-        {
             "name": "VISITA_CONTROLLO_ECG",
             "indexes": [
                 {
@@ -1216,6 +984,11 @@
                 },
                 {
                     "key": {
+                        "ID_PAZ": 1
+                    }
+                },
+                {
+                    "key": {
                         "CODPAZ": 1
                     }
                 },
@@ -1240,6 +1013,9 @@
                 "properties": {
                     "_id": {
                         "bsonType": "objectId"
+                    },
+                    "ID_PAZ": {
+                        "bsonType": "string"
                     },
                     "SEZIONE": {
                         "bsonType": "number"

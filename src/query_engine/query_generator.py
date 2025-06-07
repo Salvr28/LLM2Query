@@ -37,7 +37,7 @@ class MongoDBQueryGenerator:
         `{{"error_type": "irrelevant_request", "message": "Posso solo generare query MongoDB basate sullo schema e sul contesto forniti. Per favore, fai una domanda relativa all'interrogazione del database clinico."}}`
         IMPORTANT: For any filter values associated with the fields "COGNOME", "NOMEPAZ", or "COMUNE_DI_NASCITA", ensure the string value is in UPPERCASE. For example, if the user asks for "Rossi", the filter should be "COGNOME": "ROSSI".
         IMPORTANT: For any date values, ensure the format is "YYYY-MM-DDT00:00:00.000+00:00" (e.g., "2023-01-01T00:00:00.000+00:00"). This is crucial for date comparisons in MongoDB queries.
-        
+
         Details for valid MongoDB query JSON:
         The JSON object MUST have the following top-level keys:
         - "collection_name": (string) The name of the MongoDB collection.
@@ -46,6 +46,7 @@ class MongoDBQueryGenerator:
         - For "find" operations, "arguments" MUST contain:
             - "filter": (object) The MongoDB filter document.
             - "projection": (object, optional) The MongoDB projection document.
+            **IMPORTANT FOR "find" with "$in": The "$in" operator expects a list of concrete values. Do NOT use sub-queries, $aggregate, or other complex expressions to dynamically generate the array for "$in" directly within the "find" operation's filter. If you need to filter based on results from another collection, construct an "aggregate" pipeline using "$lookup" and subsequent "$match" stages.**
         - For "aggregate" operations, "arguments" MUST contain:
             - "pipeline": (array) An array of MongoDB aggregation pipeline stages.
 
@@ -55,8 +56,6 @@ class MongoDBQueryGenerator:
         MongoDB Schema:
         {self.db_schema}
 
-        Retrieved Context (for informational purposes, use the schema for exact field names and structure):
-        {context}
 
         Examples of desired JSON output:
         Instruct: "Mostrami tutti i pazienti nati dopo il 1940, visualizzando nome e data di nascita."
@@ -99,15 +98,15 @@ class MongoDBQueryGenerator:
                 {{
                     "$lookup": {{
                         "from": "RICOVERO_OSPEDALIERO",
-                        "localField": "CODPAZ",
-                        "foreignField": "CODPAZ",
+                        "localField": "ID_PAZ",
+                        "foreignField": "ID_PAZ",
                         "as": "info_ricoveri"
                     }}
                 }},
                 {{
                     "$project": {{
                         "_id": 0,
-                        "codice_paziente_anamnesi": "$CODPAZ",
+                        "id_paziente_anamnesi": "$ID_PAZ",
                         "date_ricoveri_ospedalieri": "$info_ricoveri.DATA"
                     }}
                 }}
@@ -206,20 +205,18 @@ class MongoDBQueryGenerator:
 
     def clean_llm_json_output(self, text: str) -> str:
         """
-        Rimuove i blocchi di codice Markdown comuni (es. ```json ... ```) da una stringa.
+        Removes common Markdown code blocks (e.g. ``json ... ``) from a string.
         """
         text = text.strip()
-        # Regex per catturare il contenuto all'interno di ```json ... ``` o ``` ... ```
-        # Gestisce un identificatore di linguaggio opzionale e newline opzionali attorno al contenuto.
-        # [\s\S] corrisponde a qualsiasi carattere, inclusi i newline. *? è non-greedy.
+        # Regex to capture content inside ```json ... ``` or ``` ... ```
         match = re.match(r"^\s*```(?:[a-zA-Z0-9]+)?\s*([\s\S]*?)\s*```\s*$", text)
         if match:
-            # Se è stato trovato un blocco markdown, restituisce il contenuto catturato
+            # If a markdown block was found, return the captured content
             return match.group(1).strip()
         else:
-            # Se nessun blocco markdown è rilevato, restituisce il testo originale (dopo strip)
+            # If no markdown block is detected, return the original text (after strip)
             return text
-        
+
 
 
 

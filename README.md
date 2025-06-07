@@ -122,6 +122,8 @@ Our benchmark methodology is designed to provide a clear comparison between the 
 
 ## 5. Visual Demo 🎬
 
+https://github.com/user-attachments/assets/b6b49940-2c99-4f92-b100-ba8a11924d63
+
 ## 6. Installation guide 🛠️
 This guide will walk you through the steps required to set up and run the LLM2Query prototype on your local machine. Please note that due to the sensitive nature of our primary dataset, you will need to prepare your own test data.
 

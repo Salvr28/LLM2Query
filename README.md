@@ -47,6 +47,7 @@ The LLM2Query project is organized into a modular structure to ensure clarity, s
 ```txt
 .
 ├── chroma_data/                       # Datasets documentations embeddings
+├── Docs/                              # Official project documentation & detailed benchmark results 
 ├── Dataset/                           # Contains original or preprocessed datasets
 ├── Datasets_documentation/            # Documentation related to the datasets
 ├── images/                            # Images used within the project or documentation
@@ -102,10 +103,10 @@ To rigorously evaluate the performance and accuracy of our LLM2Query system, we 
 ### 4.1 Methodology
 Our benchmark methodology is designed to provide a clear comparison between the system's output and a "gold standard" of human-generated, correct results. Wwe manually crafted the ground truth MongoDB queries and executed them against our dataset to obtain the "gold standard" result set. This represents the ideal outcome for each query.
 
-* We compiled a test set consisting of 30 distinct natural language queries relevant to cardiological data, simulating real-world requests from physicians.
+* We compiled a test set consisting of 25 distinct natural language queries relevant to cardiological data, simulating real-world requests from physicians.
     * 10 Easy Queries
     * 10 Medium Queries
-    * 10 Difficult Queriez
+    * 5 Difficult Queries
 
 ### 4.2 System Evaluation
 * We ran each of the 30 natural language queries through our LLM2Query system under two configurations:
